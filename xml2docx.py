@@ -58,22 +58,28 @@ def printTree(front):
 #	print("\n----------\n")
 
 
-def docxNewParagraph(textValue, style):
+def docxNewParagraph(textValue, style = None, justification = None):
 	if textValue is None:
 		return None
 	docxP = docxRoot.createElement('w:p')
 	
-# First handle the style
+# First handle the style or justification
 #	<w:pPr>
 #			<w:pStyle w:val="Title"/>
+#			<w:jc w:val="right"/>
 #			<w:rPr>
 #				<w:lang w:val="en-US"/>
 #			</w:rPr>
 #	</w:pPr>
 	pPr = docxRoot.createElement('w:pPr')
-	pStyle =  docxRoot.createElement('w:pStyle')
-	pStyle.setAttribute('w:val', style) 
-	pPr.appendChild(pStyle)
+	if style != None:
+		pStyle =  docxRoot.createElement('w:pStyle')
+		pStyle.setAttribute('w:val', style) 
+		pPr.appendChild(pStyle)
+	if justification != None:
+		jc =  docxRoot.createElement('w:jc')
+		jc.setAttribute('w:val', justification) 
+		pPr.appendChild(jc)
 	docxP.appendChild(pPr)
 # Then handle the actual text
 #	<w:r w:rsidRPr="00C46909">
@@ -100,13 +106,13 @@ def parseAbstract(elem):
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
 		elif child.nodeName == 't':
-			parseText(child, 'IntenseQuote')
+			parseText(child, style = 'IntenseQuote')
 		else:
 			print('Unexpected tagName in Abstract: ', child.nodeName)
 
 def parseAuthor(elem):
 	if elem.hasAttribute('fullname'):
-		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname'), 'Subtitle'))
+		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname'), justification = 'right'))
 	else:
 		author = ''
 		if elem.hasAttribute('initials'):
@@ -114,7 +120,7 @@ def parseAuthor(elem):
 		if elem.hasAttribute('surname'):
 			author = author + elem.getAttribute('surname')
 		if author != '':
-			docxBody.appendChild(docxNewParagraph(author, 'Subtitle'))
+			docxBody.appendChild(docxNewParagraph(author, justification = 'right'))
 	
 def parseDate(elem):
 	dateString = ''
@@ -125,7 +131,7 @@ def parseDate(elem):
 	if elem.hasAttribute('year'):
 		dateString = dateString + elem.getAttribute('year')
 	if dateString != '':
-		docxBody.appendChild(docxNewParagraph(dateString, 'Subtitle'))
+		docxBody.appendChild(docxNewParagraph(dateString, justification = 'right'))
 	
 def parseFigure(elem):
 	print('Cannot parse figure')
@@ -163,7 +169,7 @@ def parseSection(elem, headingDepth, headingPrefix):
 			# Should create a docx Child ???
 			parseSection(child, headingDepth + 1, headingPrefix + headingSuffix)
 		elif child.nodeName == 't':
-			parseText(child, 'Normal')
+			parseText(child, style = None)
 		elif child.nodeName == 'figure':
 			parseFigure(child)
 		elif child.nodeName == 'title':
@@ -177,7 +183,7 @@ def parseSection(elem, headingDepth, headingPrefix):
 		else:
 			print('Unexpected tag:' + child.tagName)
  
-def parseText(elem, style = 'Normal'):   # Could also be None and then do not emit the style....
+def parseText(elem, style = None):
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
 		print("\t", attrib.name, ' = ' , attrib.value)
