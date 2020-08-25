@@ -1,0 +1,4576 @@
+<?xml version="1.0" ?>
+<w:document mc:Ignorable="w14 w15 w16se w16cid w16 w16cex wp14" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+	<w:body>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Title"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Operational Security Considerations for IPv6 Networks</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Subtitle"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Eric Vyncke</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Subtitle"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Kiran Kumar</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Subtitle"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Merike Kaeo</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Subtitle"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Enno Rey</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Subtitle"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>16 December 2019</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="IntenseQuote"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Knowledge and experience on how to operate IPv4 securely is available: whether it is the Internet or an enterprise internal network. However, IPv6 presents some new security challenges. RFC 4942 describes the security issues in the protocol but network managers also need a more practical, operations-minded document to enumerate advantages and/or disadvantages of certain choices.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="IntenseQuote"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This document analyzes the operational security issues in several places of a network (enterprises, service providers and residential users) and proposes technical and procedural mitigation techniques. The residential users case assumes a managed ISP CPE device. Some very specific places of a network such as the Internet of Things and unmanaged home networks are not discussed in this document.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Introduction</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Running an IPv6 network is new for most operators not only because they are not yet used to large scale IPv6 networks but also because there are subtle differences between IPv4 and IPv6 especially with respect to security. For example, all layer-2 interactions are now done using Neighbor Discovery Protocol [RFC4861] rather than using Address Resolution Protocol [RFC0826].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IPv6 networks are deployed using a variety of techniques, each of which have their own specific security concerns.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This document complements [RFC4942] by listing all security issues when operating a network utilizing varying transition technologies and updating it with that have been standardized since 2007. It also provides more recent operational deployment experiences where warranted.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Requirements Language</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all capitals, as shown here.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Generic Security Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Addressing Architecture</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IPv6 address allocations and overall architecture are an important part of securing IPv6. Initial designs, even if intended to be temporary, tend to last much longer than expected. Although initially IPv6 was thought to make renumbering easy, in practice it may be extremely difficult to renumber without a proper IP Addresses Management (IPAM) system.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A key task for a successful IPv6 deployment is to prepare an addressing plan. Because an abundance of address space is available, structuring an address plan around both services and geographic locations allow address space to become a basis for more structured security policies to permit or deny services between geographic regions.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A common question is whether companies should use Provider Independent (PI) vs Provider Allocated (PA) space [RFC7381], but from a security perspective there is little difference. However, one aspect to keep in mind is who has administrative ownership of the address space and who is technically responsible if/when there is a need to enforce restrictions on routability of the space e.g. due to malicious criminal activity originating from it.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In [RFC7934], it is recommended that IPv6 network deployments provide multiple IPv6 addresses from each prefix to general-purpose hosts and it specifically does not recommend limiting a host to only one IPv6 address per prefix. It also recommends that the network give the host the ability to use new addresses without requiring explicit requests (for example by using SLAAC). Having multiple IPv6 addresses per interface is a major change compared to the unique IPv4 address per interface; especially for audits (see section [correlation]).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Use of ULAs</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Unique Local Addresses (ULAs) [RFC4193] are intended for scenarios where interfaces are not globally reachable, despite being routed within a domain. They formally have global scope, but [RFC4193] specifies that they must be filtered out at domain boundaries. ULAs are different from [RFC1918] addresses and have different use cases. One use of ULA is described in [RFC4864].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Point-to-Point Links</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC6164] in section 5.1 specifies the rationale of using /127 for inter-router point-to-point links; a /127 prevents the ping-pong attack between routers not implementing correctly [RFC4443] and also prevents a DoS attack on the neighbor cache. The previous recommendation of [RFC3627] has been obsoleted and marked Historic by [RFC6547]).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Some environments are also using link-local addressing for point-to-point links. While this practice could further reduce the attack surface against infrastructure devices, the operational disadvantages need also to be carefully considered; see also [RFC7404].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Loopback Addresses</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Many operators reserve a /64 block for all loopback addresses in their infrastructure and allocate a /128 out of this reserved /64 prefix for each loopback interface. This practice allows for an easy to write Access Control List (ACL) to enforce a security policy about those loopback addresses</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Stable Addresses</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>When considering how to assign stable addresses (either by static configuration or by pre-provisionned DHCPv6 lease) [dhcpdns], it is necessary to take into consideration the effectiveness of perimeter security in a given environment. There is a trade-off between ease of operation (where some portions of the IPv6 address could be easily recognizable for operational debugging and troubleshooting) versus the risk of trivial scanning used for reconnaissance. [SCANNING] shows that there are scientifically based mechanisms that make scanning for IPv6 reachable nodes more feasible than expected; see also [RFC7707]. Stable addresses also allow easy enforcement of a security policy at the perimeter based on IPv6 addresses; [RFC8520] is a mechanism where the perimeter defense can retrieve security policy template based on the type of internal device.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The use of well-known IPv6 addresses (such as ff02::1 for all link-local nodes) or the use of commonly repeated addresses could make it easy to figure out which devices are name servers, routers or other critical devices; even a simple traceroute will expose most of the routers on a path. There are many scanning techniques possible and operators should not rely on the 'impossible to find because my address is random' paradigm, even if it is common practice to have the stable addresses randomly distributed across /64 subnets and to always use DNS (as IPv6 addresses are hard to remember for the human brains).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While in some environments obfuscating addresses could be considered an added benefit, it does not preclude that perimeter rules are actively enforced and that stable addresses follow some logical allocation scheme for ease of operation (as simplicity always helps security).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Typical deployments will have a mix of stable and non-stable addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Temporary Addresses - Privacy Extensions for SLAAC</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Historically stateless address autoconfiguration (SLAAC) relied on an automatically generated 64-bit interface identifier (IID) based on the EUI-64 MAC address, which together with the /64 prefix makes up the globally unique IPv6 address. The EUI-64 address is generated from the 48-bit stable MAC address. [RFC8064] recommends against the use of EUI-64 addresses and it must be noted that most host operating systems do not use EUI-64 addresses anymore and rely on either [RFC4941] or [RFC8064].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Randomly generating an interface ID, as described in [RFC4941], is part of SLAAC with so-called privacy extension addresses and is used to address some privacy concerns. Privacy extension addresses a.k.a. temporary addresses may help to mitigate the correlation of activities of a node within the same network, and may also reduce the attack exposure window.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Using [RFC4941] privacy extension addresses might prevent the operator from building host specific access control lists (ACLs). The [RFC4941] privacy extension addresses could also be used to obfuscate some malevolent activities and specific user attribution/accountability procedures should be put in place as described in [log].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC8064] specifies another way to generate an address while still keeping the same IID for each network prefix; this allows SLAAC nodes to always have the same stable IPv6 address on a specific network while having different IPv6 address on different networks.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In some specific use cases where user accountability is more important than user privacy, network operators may consider disabling SLAAC and relying only on DHCPv6; but, not all operating systems support DHCPv6 so some hosts will not get any IPv6 connectivity. Disabling SLAAC and privacy extensions addresses can be done for most operating systems by sending RA messages with a hint to get addresses via DHCPv6 by setting the M-bit but also disabling SLAAC by resetting all A-bits in all prefix information options. However, attackers could still find ways to bypass this mechanism if not enforced at the switch/ router level.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>However, in scenarios where anonymity is a strong desire (protecting user privacy is more important than user attribution), privacy extension addresses should be used. When [RFC8064] is available, the stable privacy address is probably a good balance between privacy (among different networks) and security/user attribution (within a network).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>DHCP/DNS Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Many environments use DHCPv6 to provision addresses and other parameters in order to ensure audit-ability and traceability (see [stateful_dhcp]). A main security concern is the ability to detect and counteract against rogue DHCP servers ([snoop]). It must be noted that as opposed to DHCPv4, DHCPv6 can lease several IPv6 addresses per client. For DHCPv4, the lease is bond to the 'client identifier', which may contain a hardware address or it may contain another type of identifier, such as a DNS name. For DHCPv6, the lease is bound to the DHCP Unique ID (DUID) of the client that is also not always bound to the client link-layer address.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While there are no fundamental differences with IPv4 and IPv6 security concerns about DNS, there are specific considerations in DNS64 [RFC6147] environments that need to be understood. Specifically, the interactions and the potential of interference with DNSSEC implementation need to be understood - these are pointed out in more detail in [nat64].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Using a /64 per host</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>An interesting approach is using a /64 per host as proposed in [RFC8273]. This allows for easier user attribution (typically based on the host MAC address) as its /64 prefix is stable even if applications within the host can change their IPv6 address within this /64.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Privacy consideration of Addresses</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Beside the security aspects of IPv6 addresses, there are also privacy considerations: mainly because they are of global scope and visible globally. [RFC7721] goes in more details about the privacy considerations of IPv6 addresses by comparing the manually configured, DHCPv6 or SLAAC.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Extension Headers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The extension headers are an important difference between IPv4 and IPv6. In IPv4-based packets, it's trivial to find the upper layer protocol type and protocol header, while in IPv6 it is more complex since the extension header chain must be parsed completely (even if not processed) in order to find the upper layer protocol header. The IANA has closed the existing empty &quot;Next Header Types&quot; registry to new entries and is redirecting its users to a new &quot;IPv6 Extension Header Types&quot; registry per [RFC7045].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>They have also become a very controversial topic since forwarding nodes that discard packets containing extension headers are known to cause connectivity failures and deployment problems [RFC7872]. Understanding the role of varying extension headers is important and this section enumerates the ones that need careful consideration.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A clarification on how intermediate nodes should handle packets with existing or future extension headers is found in [RFC7045]. The uniform TLV format to be used for defining future extension headers is described in [RFC6564].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>It must also be noted that there is no indication in the packet whether the Next Protocol field points to an extension header or to a transport header. This may confuse some filtering rules.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There is work in progress at the IETF about filtering rules for those extension headers: [I-D.ietf-opsec-ipv6-eh-filtering] for transit routers.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Order and Repetition of Extension Headers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While [RFC8200] recommends the order and the maximum repetition of extension headers, there are still IPv6 implementations at the time of writing this document which support a non-recommended order of headers (such as ESP before routing) or an illegal repetition of headers (such as multiple routing headers). The same applies for options contained in the extension headers (see [I-D.kampanakis-6man-ipv6-eh-parsing]). In some cases, it has led to nodes crashing when receiving or forwarding wrongly formatted packets.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A firewall or edge device should be used to enforce the recommended order and number of occurrences of extension headers.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Hop-by-Hop Options Header</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The hop-by-hop options header, when present in an IPv6 packet, forced all nodes implementing the previous IPv6 specification [RFC2460] to inspect and possibly process this header. This enabled denial of service attacks as most, if not all, routers could process this kind of packets in hardware but have to process this packet in software hence competing with other software tasks as handling the control and management planes.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Section 4.3 of the current Internet Standard for IPv6, [RFC8200], has taken this attack vector into account and made the processing of hop-by-hop options header by intermediate routers explicitly configurable.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Fragment Header</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The fragment header is used by the source (and only the source) when it has to fragment packets. [RFC7112] and section 4.5 of [RFC8200] explain why it is important that:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>firewall and security devices should drop first fragments that do not contain the entire ipv6 header chain (including the transport-layer header);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>destination nodes should discard first fragments that do not contain the entire ipv6 header chain (including the transport-layer header).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>If those requirements are not met, stateless filtering could be bypassed by a hostile party. [RFC6980] applies a stricter rule to NDP by enforcing the drop of fragmented NDP packets. [RFC7113] describes how RA-guard function described in [RFC6105] should behave in presence of fragmented RA packets.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IP Security Extension Header</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The [RFC4301] [RFC4301] extension headers ([RFC4302] and [RFC4303]) are required if IPsec is to be utilized for network level security functionality.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Link-Layer Security</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IPv6 relies heavily on the Neighbor Discovery protocol (NDP) [RFC4861] to perform a variety of link operations such as discovering other nodes on the link, resolving their link-layer addresses, and finding routers on the link. If not secured, NDP is vulnerable to various attacks such as router/neighbor message spoofing, redirect attacks, Duplicate Address Detection (DAD) DoS attacks, etc. Many of these security threats to NDP have been documented in IPv6 ND Trust Models and Threats [RFC3756] and in [RFC6583].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>NDP has even issues when the attacker is off-link see the section below [ratelim]; but, most of the issues are only when the attacker is on the same link.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ND/RA Rate Limiting</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Neighbor Discovery (ND) can be vulnerable to remote denial of service (DoS) attacks; for example, when a router is forced to perform address resolution for a large number of unassigned addresses. This can keep new devices from joining the network or render the last hop router ineffective due to high CPU usage. Easy mitigative steps include rate limiting Neighbor Solicitations, restricting the amount of state reserved for unresolved solicitations, and clever cache/timer management.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC6583] discusses the potential for DoS in detail and suggests implementation improvements and operational mitigation techniques that may be used to mitigate or alleviate the impact of such attacks. Here are some feasible mitigation options that can be employed by network operators today:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Ingress filtering of unused addresses by ACL. These require static configuration of the addresses; for example, allocating the addresses out of a /120 and using a specific ACL to only allow traffic to this /120 (of course, the actual hosts are configured with a /64 prefix for the link).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Tuning of NDP process (where supported).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Using /127 on point-to-point link per [RFC6164].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Using link-local addresses only on links where there are only routers see [RFC7404]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Additionally, IPv6 ND uses multicast extensively for signaling messages on the local link to avoid broadcast messages for on-the-wire efficiency. However, this has some side effects on wireless networks, such as a negative impact on battery life of smartphones and other battery-operated devices that are connected to such networks. The following drafts are actively discussing methods to rate limit RAs and other ND messages on wireless networks in order to address this issue:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[I-D.thubert-savi-ra-throttler]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[I-D.chakrabarti-nordmark-6man-efficient-nd]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>RA/NA Filtering</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Router Advertisement spoofing is a well-known on-link attack vector and has been extensively documented. The presence of rogue RAs, either unintentional or malicious, can cause partial or complete failure of operation of hosts on an IPv6 link. For example, a host can select an incorrect router address which can be used as a man-in-the-middle (MITM) attack or can assume wrong prefixes to be used for stateless address configuration (SLAAC). [RFC6104] summarizes the scenarios in which rogue RAs may be observed and presents a list of possible solutions to the problem. [RFC6105] (RA-Guard) describes a solution framework for the rogue RA problem where network segments are designed around switching devices that are capable of identifying invalid RAs and blocking them before the attack packets actually reach the target nodes.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>However, several evasion techniques that circumvent the protection provided by RA-Guard have surfaced. A key challenge to this mitigation technique is introduced by IPv6 fragmentation. An attacker can conceal the attack by fragmenting his packets into multiple fragments such that the switching device that is responsible for blocking invalid RAs cannot find all the necessary information to perform packet filtering in the same packet. [RFC7113] describes such evasion techniques, and provides advice to RA-Guard implementers such that the aforementioned evasion vectors can be eliminated.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Given that the IPv6 Fragmentation Header can be leveraged to circumvent current implementations of RA-Guard, [RFC6980] updates [RFC4861] such that use of the IPv6 Fragmentation Header is forbidden in all Neighbor Discovery messages except &quot;Certification Path Advertisement&quot;, thus allowing for simple and effective measures to counter Neighbor Discovery attacks.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The Source Address Validation Improvements (SAVI) working group has worked on other ways to mitigate the effects of such attacks. [RFC7513] helps in creating bindings between a DHCPv4 [RFC2131] /DHCPv6 [RFC8415] assigned source IP address and a binding anchor [RFC7039] on a SAVI device. Also, [RFC6620] describes how to glean similar bindings when DHCP is not used. The bindings can be used to filter packets generated on the local link with forged source IP address.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>It is still recommended that RA-Guard and SAVI be employed as a first line of defense against common attack vectors including misconfigured hosts. This line of defense is most effective when incomplete fragments are dropped by routers and switches as described in [fragments]. The generated log should also be analyzed to act on violations. Network operators should be aware that RA-Guard and SAVI do not work or are even harmful in specific network configurations.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A drastic technique to prevent all NDP attacks is based on isolation of all hosts with specific configurations. Hosts (i.e. all nodes that are not routers) are unable to send data-link layer frames to other hosts, therefore, no host to host attacks can happen. This specific set-up can be established on some switches or wireless access points. Of course, this is not always easily feasible when hosts need to communicate with other hosts. In the same vein, using a /64 per host [sixty4perhost] also provides NDP isolation of hosts; 3GPP [threegpp] uses a similar mechanism.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Securing DHCP</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Dynamic Host Configuration Protocol for IPv6 (DHCPv6), as detailed in [RFC8415], enables DHCP servers to pass configuration parameters such as IPv6 network addresses and other configuration information to IPv6 nodes. DHCP plays an important role in most large networks by providing robust stateful configuration and in the context of automated system provisioning.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The two most common threats to DHCP clients come from malicious (a.k.a. rogue) or unintentionally misconfigured DHCP servers. A malicious DHCP server is established with the intent of providing incorrect configuration information to the client to cause a denial of service attack or to mount a-man-in-the-middle attack. While unintentional, a misconfigured DHCP server can have the same impact. Additional threats against DHCP are discussed in the security considerations section of [RFC8415].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC7610], DHCPv6-Shield, specifies a mechanism for protecting connected DHCPv6 clients against rogue DHCPv6 servers. This mechanism is based on DHCPv6 packet-filtering at the layer-2 device; the administrator specifies the interfaces connected to DHCPv6 servers. Furthermore, extension headers could be leveraged to bypass DHCPv6-Shield unless [RFC7112] is enforced.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>It is recommended to use DHCPv6-Shield and to analyze the corresponding log messages.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>3GPP Link-Layer Security</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The 3GPP link is a point-to-point like link that has no link-layer address. This implies there can only be an end host (the mobile hand-set) and the first-hop router (i.e., a GPRS Gateway Support Node (GGSN) or a Packet Gateway (PGW)) on that link. The GGSN/PGW never configures a non link-local address on the link using the advertised /64 prefix on it; see [sixty4perhost]. The advertised prefix must not be used for on-link determination. There is no need for an address resolution on the 3GPP link, since there are no link-layer addresses. Furthermore, the GGSN/PGW assigns a prefix that is unique within each 3GPP link that uses IPv6 stateless address autoconfiguration. This avoids the necessity to perform DAD at the network level for every address built by the mobile host. The GGSN/PGW always provides an IID to the cellular host for the purpose of configuring the link-local address and ensures the uniqueness of the IID on the link (i.e., no collisions between its own link-local address and the mobile host's one).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The 3GPP link model itself mitigates most of the known NDP-related Denial-of-Service attacks. In practice, the GGSN/PGW only needs to route all traffic to the mobile host that falls under the prefix assigned to it. As there is also a single host on the 3GPP link, there is no need to defend that IPv6 address.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>See Section 5 of [RFC6459] for a more detailed discussion on the 3GPP link model, NDP on it and the address configuration details. In some mobile network, DHCPv6 and DHCP-PD are also used.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>SeND and CGA</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>SEcure Neighbor Discovery (SeND), as described in [RFC3971], is a mechanism that was designed to secure ND messages. This approach involves the use of new NDP options to carry public key based signatures. Cryptographically Generated Addresses (CGA), as described in [RFC3972], are used to ensure that the sender of a Neighbor Discovery message is the actual &quot;owner&quot; of the claimed IPv6 address. A new NDP option, the CGA option, was introduced and is used to carry the public key and associated parameters. Another NDP option, the RSA Signature option, is used to protect all messages relating to neighbor and Router discovery.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>SeND protects against:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Neighbor Solicitation/Advertisement Spoofing</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Neighbor Unreachability Detection Failure</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Duplicate Address Detection DoS Attack</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Router Solicitation and Advertisement Attacks</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Replay Attacks</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Neighbor Discovery DoS Attacks</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>SeND does NOT:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Protect statically configured addresses</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Protect addresses configured using fixed identifiers (i.e. EUI-64)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Provide confidentiality for NDP communications</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Compensate for an unsecured link - SEND does not require that the addresses on the link and Neighbor Advertisements correspond</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>However, at this time and over a decade since their original specifications, CGA and SeND do not have wide support from widely used end device operating systems; hence, their usefulness is limited and should not be relied upon.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Control Plane Security</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC6192] defines the router control plane. This definition is repeated here for the reader's convenience. Please note that the definition is completely protocol-version agnostic (most of this section applies to IPv6 in the same way as to IPv4).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Modern router architecture design maintains a strict separation of forwarding and router control plane hardware and software. The router control plane supports routing and management functions. It is generally described as the router architecture hardware and software components for handling packets destined to the device itself as well as building and sending packets originated locally on the device. The forwarding plane is typically described as the router architecture hardware and software components responsible for receiving a packet on an incoming interface, performing a lookup to identify the packet's IP next hop and determine the best outgoing interface towards the destination, and forwarding the packet out through the appropriate outgoing interface.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While the forwarding plane is usually implemented in high-speed hardware, the control plane is implemented by a generic processor (named router processor RP) and cannot process packets at a high rate. Hence, this processor can be attacked by flooding its input queue with more packets than it can process. The control plane processor is then unable to process valid control packets and the router can lose OSPF or BGP adjacencies which can cause a severe network disruption.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The mitigation techniques are:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>To drop non-legit control packet before they are queued to the RP (this can be done by a forwarding plane ACL) and</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>To rate limit the remaining packets to a rate that the RP can sustain. Protocol specific protection should also be done (for example, a spoofed OSPFv3 packet could trigger the execution of the Dijkstra algorithm, therefore, the number of Dijsktra executions should be also rate limited).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This section will consider several classes of control packets:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Control protocols: routing protocols: such as OSPFv3, BGP and by extension Neighbor Discovery and ICMP</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Management protocols: SSH, SNMP, NETCONF, RESTCONF, IPfix, etc</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Packet exceptions: which are normal data packets which requires a specific processing such as generating a packet-too-big ICMP message or having the hop-by-hop options header.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Control Protocols</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This class includes OSPFv3, BGP, NDP, ICMP.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>An ingress ACL to be applied on all the router interfaces should be configured so as to:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>drop OSPFv3 (identified by Next-Header being 89) and RIPng (identified by UDP port 521) packets from a non link-local address</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>allow BGP (identified by TCP port 179) packets from all BGP neighbors and drop the others</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>allow all ICMP packets (transit and to the router interfaces)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Note: dropping OSPFv3 packets which are authenticated by IPsec could be impossible on some routers whose ACL are unable to parse the IPsec ESP or AH extension headers.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Rate limiting of the valid packets should be done. The exact configuration will depend on the available resources of the router (CPU, TCAM, ...).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Management Protocols</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This class includes: SSH, SNMP, RESTCONF, NETCONF, gRPC, syslog, NTP, etc.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>An ingress ACL to be applied on all the router interfaces (or at ingress interfaces of the security perimeter or by using specific features of the platform) should be configured such as:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Drop packets destined to the routers except those belonging to protocols which are used (for example, permit TCP 22 and drop all when only SSH is used);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Drop packets where the source does not match the security policy, for example if SSH connections should only be originated from the NOC, then the ACL should permit TCP port 22 packets only from the NOC prefix.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Rate limiting of the valid packets should be done. The exact configuration will depend on the available resources of the router.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Packet Exceptions</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This class covers multiple cases where a data plane packet is punted to the route processor because it requires specific processing:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>generation of an ICMP packet-too-big message when a data plane packet cannot be forwarded because it is too large;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>generation of an ICMP hop-limit-expired message when a data plane packet cannot be forwarded because its hop-limit field has reached 0;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>generation of an ICMP destination-unreachable message when a data plane packet cannot be forwarded for any reason;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>processing of the hop-by-hop options header, new implementations follow section 4.3 of [RFC8200] where this processing is optional;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>or more specific to some router implementation: an oversized extension header chain which cannot be processed by the hardware and force the packet to be punted to the generic router CPU.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>On some routers, not everything can be done by the specialized data plane hardware which requires some packets to be 'punted' to the generic RP. This could include for example the processing of a long extension header chain in order to apply an ACL based on layer 4 information. [RFC6980] and more generally [RFC7112] highlights the security implications of oversized extension header chains on routers and updates the original IPv6 specifications, [RFC2460], such that the first fragment of a packet is required to contain the entire IPv6 header chain. Those changes are incorporated in the IPv6 standard [RFC8200]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>An ingress ACL cannot mitigate a control plane attack using these packet exceptions. The only protection for the RP is to limit the rate of those packet exceptions forwarded to the RP, this means that some data plane packets will be dropped without any ICMP messages back to the source which may cause Path MTU holes.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In addition to limiting the rate of data plane packets queued to the RP, it is also important to limit the generation rate of ICMP messages. Both to spare the RP and also to prevent an amplification attack using the router as a reflector. It is worth noting that some platforms implement this rate-limiting in hardware. Of course, a consequence of not generating an ICMP message will break some IPv6 mechanisms such as Path MTU discovery or a simple traceroute.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Routing Security</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Routing security in general can be broadly divided into three sections:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Authenticating neighbors/peers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Securing routing updates between peers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Route filtering</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC7454] covers these sections specifically for BGP in detail.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC5082] is also applicable to IPv6 and can ensure that routing protocol packets are coming from the local network; it must also be noted that in IPv6 all interior gateway protocols use link-local addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Authenticating Neighbors</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A basic element of routing is the process of forming adjacencies, neighbor, or peering relationships with other routers. From a security perspective, it is very important to establish such relationships only with routers and/or administrative domains that one trusts. A traditional approach has been to use MD5 HMAC, which allows routers to authenticate each other prior to establishing a routing relationship.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>OSPFv3 can rely on IPsec to fulfill the authentication function. However, it should be noted that IPsec support is not standard on all routing platforms. In some cases, this requires specialized hardware that offloads crypto over to dedicated ASICs or enhanced software images (both of which often come with added financial cost) to provide such functionality. An added detail is to determine whether OSPFv3 IPsec implementations use AH or ESP-Null for integrity protection. In early implementations all OSPFv3 IPsec configurations relied on AH since the details weren't specified in [RFC5340]. However, the document which specifically describes how IPsec should be implemented for OSPFv3 [RFC4552] specifically states that ESP-Null MUST and AH MAY be implemented since it follows the overall IPsec standards wordings. OSPFv3 can also use normal ESP to encrypt the OSPFv3 payload to hide the routing information.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC7166] changes OSPFv3 reliance on IPsec by appending an authentication trailer to the end of the OSPFv3 packets; it does not specifically authenticate the specific originator of an OSPFv3 packet; rather, it allows a router to confirm that the packet has been issued by a router that had access to the shared authentication key.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>With all authentication mechanisms, operators should confirm that implementations can support re-keying mechanisms that do not cause outages. There have been instances where any re-keying cause outages and therefore, the tradeoff between utilizing this functionality needs to be weighed against the protection it provides.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>As for IPv4, it is recommended to enable a routing protocol only on interface where it is required.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Securing Routing Updates</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IPv6 initially mandated the provisioning of IPsec capability in all nodes. However, in the updated IPv6 Nodes Requirement standard [RFC8504] is a 'SHOULD' and not a 'MUST' implement. Theoretically it is possible that communication between two IPv6 nodes, especially routers exchanging routing information be encrypted using IPsec. In practice however, deploying IPsec is not always feasible given hardware and software limitations of various platforms deployed, it has also an operational cost as described in the earlier section.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Route Filtering</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Route filtering policies will be different depending on whether they pertain to edge route filtering vs internal route filtering. At a minimum, IPv6 routing policy as it pertains to routing between different administrative domains should aim to maintain parity with IPv4 from a policy perspective e.g.,</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Filter internal-use, non-globally routable IPv6 addresses at the perimeter;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Discard routes for bogon and reserved space (see [RFC8190]);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Configure ingress route filters that validate route origin, prefix ownership, etc. through the use of various routing databases, e.g., RADB. There is additional work being done in this area to formally validate the origin ASs of BGP announcements in [RFC8210]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Some good guidance can be found at [RFC7454].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A valid routing table can also be used apply network ingress filtering (see [RFC2827]).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Logging/Monitoring</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In order to perform forensic research in case of a security incident or to detect abnormal behaviors, network operators should log multiple pieces of information.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This logging should include:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>logs of all applications using the network (including user space and kernel space) when available (for example web servers);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>data from [RFC7011] also known as IPfix;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>data from various SNMP [RFC4293] or YANG data via RESTCONF [RFC8040] or NETCONF [RFC6241];</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>historical data of Neighbour Cache entries;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC8415] lease cache, especially when a [RFC6221] is used;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Source Address Validation Improvement (SAVI) [RFC7039] events, especially the binding of an IPv6 address to a MAC address and a specific switch or router interface;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC2866] accounting records.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Please note that there are privacy issues or regulations related to how those logs are collected, kept and safely discarded. Operators are urged to check their country legislation (e.g. GDPR in the European Union).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>All those pieces of information can be used for:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[forensic] investigations such as who did what and when?</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[correlation]: which IP addresses were used by a specific node (assuming the use of [RFC4941])</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[inventory]: which IPv6 nodes are on my network?</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[abnormal_behavior]: unusual traffic patterns are often the symptoms of an abnormal behavior which is in turn a potential attack (denial of services, network scan, a node being part of a botnet, ...)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Data Sources</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This section lists the most important sources of data that are useful for operational security.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Logs of Applications</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Those logs are usually text files where the remote IPv6 address is stored in all characters (not binary). This can complicate the processing since one IPv6 address, for example 2001:db8::1 can be written in multiple ways such as:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>2001:DB8::1 (in uppercase)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>2001:0db8::0001 (with leading 0)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>and many other ways including the reverse DNS mapping into a FQDN (which should not be trusted).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC5952] explains this problem in detail and recommends the use of a single canonical format. This document recommends the use of [RFC5952] for IPv6 addresses in all possible cases. If the existing application cannot log under the canonical format, then it is recommended to use an external program in order to canonicalize all IPv6 addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>For example, this perl script can be used:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IP Flow Information Export by IPv6 Routers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC7012] defines some data elements that are useful for security:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>in section 5.4 (IP Header fields): nextHeaderIPv6 and sourceIPv6Address;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>in section 5.6 (Sub-IP fields) sourceMacAddress.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Moreover, IPfix is very efficient in terms of data handling and transport. It can also aggregate flows by a key such as sourceMacAddress in order to have aggregated data associated with a specific sourceMacAddress. This memo recommends the use of IPfix and aggregation on nextHeaderIPv6, sourceIPv6Address and sourceMacAddress.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>SNMP MIB and NETCONF/RESTCONF YANG Modules data by IPv6 Routers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC4293] defines a Management Information Base (MIB) for the two address families of IP. This memo recommends the use of:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ipIfStatsTable table which collects traffic counters per interface;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ipNetToPhysicalTable table which is the content of the Neighbor cache, i.e. the mapping between IPv6 and data-link layer addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There are also YANG modules about the two IP addresses families and can be used with [RFC6241] and [RFC8040]. This memo recommends the use of:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>interfaces-state/interface/statistics from [RFC8343] which contains counters for interface .</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ipv6/neighbor from [RFC8344] which is the content of the Neighbor cache, i.e. the mapping between IPv6 and data-link layer addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Neighbor Cache of IPv6 Routers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The neighbor cache of routers contains all mappings between IPv6 addresses and data-link layer addresses. There are multiple ways to collect the current entries in the Neighbor Cache, notably but not limited to:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>the [mib] as explained above;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>using streaming telemetry or NETCONF [RFC6241] to collect the operational state of the neighbor cache;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>also by connecting over a secure management channel (such as SSH) and explicitly requesting a neighbor cache dump via the Command Line Interface or another monitoring mechanism.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The neighbor cache is highly dynamic as mappings are added when a new IPv6 address appears on the network (could be quite often with [RFC4941] or when they are removed when the state goes from UNREACH to removed (the default time for a removal per [RFC4861] algorithm is 38 seconds for a typical host such as Windows 7). This means that the content of the neighbor cache must periodically be fetched at an interval which does not exhaust the router resources and still provides valuable information (suggested value is 30 seconds but to be checked in the actual set-up) and stored for later use.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This is an important source of information because it is trivial (on a switch not using the [RFC7039] algorithm) to defeat the mapping between data-link layer address and IPv6 address. Let us rephrase the previous statement: having access to the current and past content of the neighbor cache has a paramount value for forensic and audit trail.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>When using one /64 per host ([sixty4perhost]) or DHCP-PD, it is sufficient to keep the history of the allocated prefixes when combined with strict source address prefix enforcement on the routers and layer-2 switches to prevent IPv6 spoofing.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Stateful DHCPv6 Lease</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In some networks, IPv6 addresses/prefixes are managed by a stateful [RFC8415] that leases IPv6 addresses/prefixes to clients. It is indeed quite similar to DHCP for IPv4 so it can be tempting to use this DHCP lease file to discover the mapping between IPv6 addresses/prefixes and data-link layer addresses as it was usually done in the IPv4 era.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>It is not so easy in the IPv6 era because not all nodes will use DHCPv6 (there are nodes which can only do stateless autoconfiguration) but also because DHCPv6 clients are identified not by their hardware-client address as in IPv4 but by a DHCP Unique ID (DUID) which can have several formats: some being the data-link layer address, some being data-link layer address prepended with time information or even an opaque number which is useless for operational security. Moreover, when the DUID is based on the data-link address, this address can be of any interface of the client (such as the wireless interface while the client actually uses its wired interface to connect to the network).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>If a [RFC6221] is used in the layer-2 switches, then the DHCP server also receives the Interface-ID information which could be saved in order to identify the interface of the switches which received a specific leased IPv6 address. Also, if a 'normal' (not lightweight) relay agent adds the data-link layer address in the option for [RFC4649] or [RFC6939], then the DHCPv6 server can keep track of the data-link and leased IPv6 addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In short, the DHCPv6 lease file is less interesting than in the IPv4 era. If possible, it is recommended to use DHCPv6 servers that keep the relayed data-link layer address in addition to the DUID in the lease file as those servers have the equivalent information to IPv4 DHCP servers.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The mapping between data-link layer address and the IPv6 address can be secured by using switches implementing the [RFC7513] algorithms. Of course, this also requires that data-link layer address is protected by using layer-2 mechanism such as [IEEE-802.1X].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>RADIUS Accounting Log</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>For interfaces where the user is authenticated via a [RFC2866] server, and if RADIUS accounting is enabled, then the RADIUS server receives accounting Acct-Status-Type records at the start and at the end of the connection which include all IPv6 (and IPv4) addresses used by the user. This technique can be used notably for Wi-Fi networks with Wi-Fi Protected Address (WPA) or any other [IEEE-802.1X] wired interface on an Ethernet switch.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Other Data Sources</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There are other data sources that must be kept as in the IPv4 network:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>historical mapping of IPv6 addresses to users of remote access VPN;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>historical mapping of MAC address to switch interface in a wired network.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Use of Collected Data</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This section leverages the data collected as described [data_sources] in order to achieve several security benefits. Section 9.1 of [RFC7934] contains more details about host tracking.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Forensic and User Accountability</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The forensic use case is when the network operator must locate an IPv6 address that was present in the network at a certain time or is still currently in the network.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>To locate an IPv6 address in an enterprise network where the operator has control over all resources, the source of information can be, in decreasing order, neighbor cache, DHCP lease file. Then, the procedure is:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>based on the IPv6 prefix of the IPv6 address, find the router(s) which is(are) used to reach this prefix (assuming that anti-spoofing mechanisms are used);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>based on this limited set of routers, on the incident time and on the IPv6 address, retrieve the data-link address from live neighbor cache, from the historical data of the neighbor cache or from SAVI events, or retrieve the data-link address from the DHCP lease file ([stateful_dhcp]);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>based on the data-link layer address, look-up on which switch interface was this data-link layer address. In the case of wireless LAN with RADIUS accounting (see [radius_accounting]), the RADIUS log has the mapping between the user identification and the MAC address. If a Configuration Management Data Base (CMDB) is used, then it can be used to map the data-link layer address to a switch port.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>At the end of the process, the interface the host originating malicious activity or the username which was abused for malicious activity has been determined.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>To identify the subscriber of an IPv6 address in a residential Internet Service Provider, the starting point is the DHCP-PD leased prefix covering the IPv6 address; this prefix can often be linked to a subscriber via the RADIUS log. Alternatively, the Forwarding Information Base of the CMTS or BNG indicates the CPE of the subscriber and the RADIUS log can be used to retrieve the actual subscriber.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>More generally, a mix of the above techniques can be used in most if not all networks.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Inventory</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC7707] is about the difficulties for an attacker to scan an IPv6 network due to the vast number of IPv6 addresses per link (and why in some cases it can still be done). While the huge addressing space can sometimes be perceived as a 'protection', it also make the inventory task difficult in an IPv6 network while it was trivial to do in an IPv4 network (a simple enumeration of all IPv4 addresses, followed by a ping and a TCP/UDP port scan). Getting an inventory of all connected devices is of prime importance for a secure operation of a network.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There are many ways to do an inventory of an IPv6 network.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The first technique is to use the IPfix information and extract the list of all IPv6 source addresses to find all IPv6 nodes that sent packets through a router. This is very efficient but alas will not discover silent node that never transmitted such packets. Also, it must be noted that link-local addresses will never be discovered by this means.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The second way is again to use the collected neighbor cache content to find all IPv6 addresses in the cache. This process will also discover all link-local addresses. See [ndp_cache].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Another way works only for local network, it consists in sending a ICMP ECHO_REQUEST to the link-local multicast address ff02::1 which is all IPv6 nodes on the network. All nodes should reply to this ECHO_REQUEST per [RFC4443].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Other techniques involve obtaining data from DNS, parsing log files, leveraging service discovery such as mDNS [RFC6762] and [RFC6763].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Enumerating DNS zones, especially looking at reverse DNS records and CNAMES, is another common method employed by various tools. As already mentioned in [RFC7707], this allows an attacker to prune the IPv6 reverse DNS tree, and hence enumerate it in a feasible time. Furthermore, authoritative servers that allow zone transfers (AXFR) may be a further information source.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Correlation</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In an IPv4 network, it is easy to correlate multiple logs, for example to find events related to a specific IPv4 address. A simple Unix grep command was enough to scan through multiple text-based files and extract all lines relevant to a specific IPv4 address.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In an IPv6 network, this is slightly more difficult because different character strings can express the same IPv6 address. Therefore, the simple Unix grep command cannot be used. Moreover, an IPv6 node can have multiple IPv6 addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In order to do correlation in IPv6-related logs, it is advised to have all logs in a format with only canonical IPv6 addresses [RFC5952]. Then, the neighbor cache current (or historical) data set must be searched to find the data-link layer address of the IPv6 address. Then, the current and historical neighbor cache data sets must be searched for all IPv6 addresses associated to this data-link layer address: this is the search set. The last step is to search in all log files (containing only IPv6 address in canonical format) for any IPv6 addresses in the search set.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Moreover, [RFC7934] recommends using multiple IPv6 addresses per prefix, so, the correlation must also be done among those multiple IPv6 addresses, for example by discovering in the [ndp_cache] all IPv6 addresses associated with the same MAC address and interface.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Abnormal Behavior Detection</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Abnormal behaviors (such as network scanning, spamming, denial of service) can be detected in the same way as in an IPv4 network</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>sudden increase of traffic detected by interface counter (SNMP) or by aggregated traffic from [RFC7012];</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>change of traffic pattern (number of connection per second, number of connection per host...) with the use of [RFC7012]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Summary</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While some data sources (IPfix, MIB, switch CAM tables, logs, ...) used in IPv4 are also used in the secure operation of an IPv6 network, the DHCPv6 lease file is less reliable and the neighbor cache is of prime importance.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The fact that there are multiple ways to express in a character string the same IPv6 address renders the use of filters mandatory when correlation must be done.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Transition/Coexistence Technologies</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>As it is expected that some networks will not run in a pure IPv6-only way, the different transition mechanisms must be deployed and operated in a secure way. This section proposes operational guidelines for the most known and deployed transition techniques.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Dual Stack</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Dual stack is often the first deployment choice for network operators. Dual stacking the network offers some advantages over other transition mechanisms. Firstly, the impact on existing IPv4 operations is reduced. Secondly, in the absence of tunnels or address translation, the IPv4 and IPv6 traffics are native (easier to observe and secure) and should have the same network processing (network path, quality of service, ...). Dual stack enables a gradual turn off of the IPv4 operations when the IPv6 network is ready for prime time. On the other hand, the operators have to manage two network stacks with the added complexities.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>From an operational security perspective, this now means that the network operator has twice the exposure. One needs to think about protecting both protocols now. At a minimum, the IPv6 portion of a dual stacked network should maintain parity with IPv4 from a security policy point of view. Typically, the following methods are employed to protect IPv4 networks at the edge or security perimeter:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ACLs to permit or deny traffic;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Firewalls with stateful packet inspection.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>It is recommended that these ACLs and/or firewalls be additionally configured to protect IPv6 communications. The enforced IPv6 security must be congruent with the IPv4 security policy, else the attacker will use the protocol version having the more relaxed security policy. Maintaining the congruence between security policies can be challenging (especially over time); it is recommended to use a firewall or an ACL manager that is dual-stack, i.e., a system that can apply a single ACL entry to a mixed group of IPv4 and IPv6 addresses.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Also, given the end-to-end connectivity that IPv6 provides, it is recommended that hosts be fortified against threats. General device hardening guidelines are provided in [device].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>For many years, all host operating systems have IPv6 enabled by default, so, it is possible even in an 'IPv4-only' network to attack layer-2 adjacent victims over their IPv6 link-local address or over a global IPv6 address when the attacker provides rogue RAs or a rogue DHCPv6 service.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Encapsulation Mechanisms</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There are many tunnels used for specific use cases. Except when protected by [RFC4301], all those tunnels have a couple of security issues as described in [RFC6169];</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>tunnel injection: a malevolent person knowing a few pieces of information (for example the tunnel endpoints and the used protocol) can forge a packet which looks like a legit and valid encapsulated packet that will gladly be accepted by the destination tunnel endpoint, this is a specific case of spoofing;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>traffic interception: no confidentiality is provided by the tunnel protocols (without the use of IPsec or alternative encryption methods), therefore anybody on the tunnel path can intercept the traffic and have access to the clear-text IPv6 packet; combined with the absence of authentication, a man in the middle attack can also be mounted;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>service theft: as there is no authorization, even a non-authorized user can use a tunnel relay for free (this is a specific case of tunnel injection);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>reflection attack: another specific use case of tunnel injection where the attacker injects packets with an IPv4 destination address not matching the IPv6 address causing the first tunnel endpoint to re-encapsulate the packet to the destination... Hence, the final IPv4 destination will not see the original IPv4 address but only one IPv4 address of the relay router.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>bypassing security policy: if a firewall or an IPS is on the path of the tunnel, then it may neither inspect nor detect an malevolent IPv6 traffic contained in the tunnel.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>To mitigate the bypassing of security policies, it is recommended to block all default configuration tunnels by denying IPv4 packets matching:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IP protocol 41: this will block [isatap], [sixtofour], [sixrd] as well as [statictunnel] tunnels;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IP protocol 47: this will block [statictunnel] tunnels;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>UDP protocol 3544: this will block the default encapsulation of [teredo] tunnels. Teredo is now mostly never used and it is no longer automatic in most environment, so, it is less of a threat, however, special consideration must be taken in case of devices with older or non-updated operating systems may be present, which by default were running Teredo.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC2827] should also be applied on all tunnel endpoints if applicable to prevent IPv6 address spoofing.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>As several of the tunnel techniques share the same encapsulation (i.e. IPv4 protocol 41) and embed the IPv4 address in the IPv6 address, there are a set of well-known looping attacks described in [RFC6324], this RFC also proposes mitigation techniques.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Site-to-Site Static Tunnels</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Site-to-site static tunnels are described in [RFC2529] and in [RFC2784]. As the IPv4 endpoints are statically configured and are not dynamic they are slightly more secure (bi-directional service theft is mostly impossible) but traffic interception and tunnel injection are still possible. Therefore, the use of [RFC4301] in transport mode and protecting the encapsulated IPv4 packets is recommended for those tunnels. Alternatively, IPsec in tunnel mode can be used to transport IPv6 traffic over a non-trusted IPv4 network.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ISATAP</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>ISATAP tunnels [RFC5214] are mainly used within a single administrative domain and to connect a single IPv6 host to the IPv6 network. This often implies that those systems are usually managed by a single entity; therefore, audit trail and strict anti-spoofing are usually possible and this raises the overall security.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Special care must be taken to avoid looping attack by implementing the measures of [RFC6324] and of [RFC6964].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC4301] in transport or tunnel mode can be used to secure the IPv4 ISATAP traffic to provide IPv6 traffic confidentiality and prevent service theft.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>6rd</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While 6rd tunnels share the same encapsulation as [sixtofour], they are designed to be used within a single SP domain, in other words they are deployed in a more constrained environment than 6to4 tunnels and have little security issues except lack of confidentiality. The security considerations (Section 12) of [RFC5969] describes how to secure the 6rd tunnels.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC4301] for the transported IPv6 traffic can be used if confidentiality is important.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>6PE, 6VPE, and LDPv6</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Organizations using MPLS in their core can also use 6PE [RFC4798] and 6VPE [RFC4659] to enable IPv6 access over MPLS. As 6PE and 6VPE are really similar to BGP/MPLS IP VPN described in [RFC4364], the security of these networks is also similar to the one described in [RFC4381]. It relies on:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Address space, routing and traffic separation with the help of VRFs (only applicable to 6VPE);</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Hiding the IPv4 core, hence removing all attacks against P-routers;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Securing the routing protocol between CE and PE; in the case of 6PE and 6VPE, link-local addresses (see [RFC7404]) can be used and as these addresses cannot be reached from outside of the link, the security of 6PE and 6VPE is even higher than the IPv4 BGP/MPLS IP VPN.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>LDPv6 itself does not induce new risks, see also [RFC7552].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>DS-Lite</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>DS-lite is also a translation mechanism and is therefore analyzed [dslite] in this document.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Mapping of Address and Port</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>With the encapsulation and translation versions of mapping of Address and Port ([RFC7597] and [RFC7599]), the access network is purely an IPv6 network and MAP protocols are used to give IPv4 hosts on the subscriber network access to IPv4 hosts on the Internet. The subscriber router does stateful operations in order to map all internal IPv4 addresses and layer-4 ports to the IPv4 address and the set of layer-4 ports received through MAP configuration process. The SP equipment always does stateless operations (either decapsulation or stateless translation). Therefore, as opposed to [dslite] there is no state-exhaustion DoS attack against the SP equipment because there is no state and there is no operation caused by a new layer-4 connection (no logging operation).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The SP MAP equipment should implement all the security considerations of [RFC7597]; notably, ensuring that the mapping of the IPv4 address and port are consistent with the configuration. As MAP has a predictable IPv4 address and port mapping, the audit logs are easier to manage.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>6to4</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC3056] require a public routable IPv4 address in order to work correctly. They can be used to provide either one IPv6 host connectivity to the IPv6 Internet or multiple IPv6 networks connectivity to the IPv6 Internet. The 6to4 relay was historically the anycast address defined in [RFC3068] which has been deprecated by [RFC7526] and is no longer used by recent Operating Systems. Some security considerations are explained in [RFC3964].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC6343] points out that if an operator provides well-managed servers and relays for 6to4, non-encapsulated IPv6 packets will pass through well- defined points (the native IPv6 interfaces of those servers and relays) at which security mechanisms may be applied. Client usage of 6to4 by default is now discouraged, and significant precautions are needed to avoid operational problems.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Teredo</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Teredo tunnels [RFC4380] are mainly used in a residential environment because Teredo easily traverses an IPv4 NAPT device thanks to its UDP encapsulation. Teredo tunnels connect a single host to the IPv6 Internet. Teredo shares the same issues as other tunnels: no authentication, no confidentiality, possible spoofing and reflection attacks.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC4301] for the transported IPv6 traffic is recommended.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The biggest threat to Teredo is probably for IPv4-only network as Teredo has been designed to easily traverse IPV4 NAT-PT devices which are quite often co-located with a stateful firewall. Therefore, if the stateful IPv4 firewall allows unrestricted UDP outbound and accept the return UDP traffic, then Teredo actually punches a hole in this firewall for all IPv6 traffic to the Internet and from the Internet. While host policies can be deployed to block Teredo in an IPv4-only network in order to avoid this firewall bypass, it would be enough to block all UDP outbound traffic at the IPv4 firewall if deemed possible (of course, at least port 53 should be left open for DNS traffic, port 500 for IKE, i.e. filter judiciously).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Teredo is now mostly never used and no longer enabled by default in most environment, so, it is less of a threat, however, special consideration must be taken in case of devices with older or non-updated operating systems may be present, which by default were running Teredo.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Translation Mechanisms</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Translation mechanisms between IPv4 and IPv6 networks are alternate coexistence strategies while networks transition to IPv6. While a framework is described in [RFC6144] the specific security considerations are documented in each individual mechanism. For the most part they specifically mention interference with IPsec or DNSSEC deployments, how to mitigate spoofed traffic and what some effective filtering strategies may be.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>While not really a transition mechanism to IPv6, this section also includes the discussion about the use of heavy IPv4 to IPv4 network address and port translation to prolong the life of IPv4-only network.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Carrier-Grade NAT (CGN)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Carrier-Grade NAT (CGN), also called NAT444 CGN or Large Scale NAT (LSN) or SP NAT is described in [RFC6264] and is utilized as an interim measure to prolong the use of IPv4 in a large service provider network until the provider can deploy an effective IPv6 solution. [RFC6598] requested a specific IANA allocated /10 IPv4 address block to be used as address space shared by all access networks using CGN. This has been allocated as 100.64.0.0/10.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Section 13 of [RFC6269] lists some specific security-related issues caused by large scale address sharing. The Security Considerations section of [RFC6598] also lists some specific mitigation techniques for potential misuse of shared address space. Some Law Enforcement Agencies have identified CGN as impeding their cyber-crime investigations (for example [europol-cgn]). Many translation techniques (NAT64, DS-lite, ...) have the same security issues as CGN when one part of the connection is IPv4-only.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC6302] has recommendations for Internet-facing servers to also log the source TCP or UDP ports of incoming connections in an attempt to help identify the users behind such a CGN.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC7422] suggests the use of deterministic address mapping in order to reduce logging requirements for CGN. The idea is to have an algorithm mapping back and forth the internal subscriber to public ports.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>NAT64/DNS64 and 464XLAT</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Stateful NAT64 translation [RFC6146] allows IPv6-only clients to contact IPv4 servers using unicast UDP, TCP, or ICMP. It can be used in conjunction with DNS64 [RFC6147], a mechanism which synthesizes AAAA records from existing A records. There is also a stateless NAT64 [RFC7915] which is similar for the security aspects with the added benefit of being stateless, so, less prone to a state exhaustion attack.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The Security Consideration sections of [RFC6146] and [RFC6147] list the comprehensive issues. A specific issue with the use of NAT64 is that it will interfere with most IPsec deployments unless UDP encapsulation is used. DNSSEC has an impact on DNS64 see section 3.1 of [RFC7050].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Another translation mechanism relying on a combination of stateful and stateless translation, 464XLAT [RFC6877], can be used to do host local translation from IPv4 to IPv6 and a network provider translation from IPv6 to IPv4, i.e., giving IPv4-only application access to IPv4-only server over an IPv6-only network. 464XLAT shares the same security considerations as NAT64 and DNS64, however it can be used without DNS64, avoiding the DNSSEC implications.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading4"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>DS-Lite</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Dual-Stack Lite (DS-Lite) [RFC6333] is a transition technique that enables a service provider to share IPv4 addresses among customers by combining two well-known technologies: IP in IP (IPv4-in-IPv6) and Network Address and Port Translation (NAPT).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Security considerations with respect to DS-Lite mainly revolve around logging data, preventing DoS attacks from rogue devices (as the Address Family Translation Router, AFTR [RFC6333] function is stateful) and restricting service offered by the AFTR only to registered customers.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Section 11 of [RFC6333] describes important security issues associated with this technology.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>General Device Hardening</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There are many environments which rely on the network infrastructure to disallow malicious traffic to get access to critical hosts. In new IPv6 deployments it has been common to see IPv6 traffic enabled but none of the typical access control mechanisms enabled for IPv6 device access. With the possibility of network device configuration mistakes and the growth of IPv6 in the overall Internet it is important to ensure that all individual devices are hardened against miscreant behavior.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The following guidelines should be used to ensure appropriate hardening of the host, be it an individual computer or router, firewall, load-balancer, server, etc. device.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Restrict access to the device to authorized individuals</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Monitor and audit access to the device</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Turn off any unused services on the end node</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Understand which IPv6 addresses are being used to source traffic and change defaults if necessary</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Use cryptographically protected protocols for device management if possible (SCP, SNMPv3, SSH, TLS, etc.)</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Use host firewall capabilities to control traffic that gets processed by upper layer protocols</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Use virus scanners to detect malicious programs</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Enterprises Specific Security Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Enterprises generally have robust network security policies in place to protect existing IPv4 networks. These policies have been distilled from years of experiential knowledge of securing IPv4 networks. At the very least, it is recommended that enterprise networks have parity between their security policies for both protocol versions. This section also applies to the enterprise part of all ISP, i.e., the part of the network where the ISP employees are connected.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Security considerations in the enterprise can be broadly categorized into two sections - External and Internal.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>External Security Considerations:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The external aspect deals with providing security at the edge or perimeter of the enterprise network where it meets the service providers network. This is commonly achieved by enforcing a security policy either by implementing dedicated firewalls with stateful packet inspection or a router with ACLs. A common default IPv4 policy on firewalls that could easily be ported to IPv6 is to allow all traffic outbound while only allowing specific traffic, such as established sessions, inbound (see also [RFC6092]). Here are a few more things that could enhance the default policy:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Filter internal-use IPv6 addresses at the perimeter</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Discard packets from and to bogon and reserved space, see also [RFC8190]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Accept certain ICMPv6 messages to allow proper operation of ND and PMTUD, see also [RFC4890] or [REY_PF] for hosts</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Filter specific extension headers by accepting only the required ones (white list approach) such as ESP, AH (not forgetting the required transport layers: ICMP, TCP, UDP, ...), where possible at the edge and possibly inside the perimeter; see also [I-D.ietf-opsec-ipv6-eh-filtering]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Filter packets having an illegal IPv6 headers chain at the perimeter (and if possible, inside the network as well), see [ext_headers]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Filter unneeded services at the perimeter</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Implement ingress and egress anti-spoofing in the forwarding and control planes, see [RFC2827] and [RFC3704]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Implement appropriate rate-limiters and control-plane policers</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Internal Security Considerations:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The internal aspect deals with providing security inside the perimeter of the network, including the end host. The most significant concerns here are related to Neighbor Discovery. At the network level, it is recommended that all security considerations discussed in [linklayer] be reviewed carefully and the recommendations be considered in-depth as well.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>As mentioned in [transition], care must be taken when running automated IPv6-in-IPv4 tunnels.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>When site-to-site VPNs are used it should be kept in mind that, given the global scope of IPv6 global addresses as opposed to the common use of IPv4 private address space [RFC1918], sites might be able to communicate with each other over the Internet even when the VPN mechanism is not available and hence no traffic encryption is performed and traffic could be injected from the Internet into the site, see [WEBER_VPN]. It is recommended to filter at the Internet connection(s) packets having a source or destination address belonging to the site internal prefix(es); this should be done for ingress and egress traffic.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Hosts need to be hardened directly through security policy to protect against security threats. The host firewall default capabilities have to be clearly understood. In some cases, 3rd party firewalls have no IPv6 support whereas the native firewall installed by default has IPv6 support. General device hardening guidelines are provided in [device].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>It should also be noted that many hosts still use IPv4 for transporting logs for RADIUS, DIAMETER, TACACS+, SYSLOG, etc. Operators cannot rely on an IPv6-only security policy to secure such protocols that are still using IPv4.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Service Providers Security Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>BGP</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The threats and mitigation techniques are identical between IPv4 and IPv6. Broadly speaking they are:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Authenticating the TCP session;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>TTL security (which becomes hop-limit security in IPv6) as [RFC5082];</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>bogon AS filtering;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Prefix filtering.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>These are explained in more detail in [rsec]. Also, the recommendations of [RFC7454] should be considered.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading3"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Remote Triggered Black Hole Filtering</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>RTBH [RFC5635] works identically in IPv4 and IPv6. IANA has allocated the 100::/64 prefix to be used as the discard prefix [RFC6666].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Transition/Coexistence Mechanism</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>SP will typically use transition mechanisms such as 6rd, 6PE, MAP, NAT64 which have been analyzed in the transition and coexistence [coexistence].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading2"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Lawful Intercept</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The Lawful Intercept requirements are similar for IPv6 and IPv4 architectures and will be subject to the laws enforced in varying geographic regions. The local issues with each jurisdiction can make this challenging and both corporate legal and privacy personnel should be involved in discussions pertaining to what information gets logged and what the logging retention policies will be.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The target of interception will usually be a residential subscriber (e.g. his/her PPP session or physical line or CPE MAC address). With the absence of IPv6 NAT on the CPE, IPv6 has the possibility to allow for intercepting the traffic from a single host (a /128 target) rather than the whole set of hosts of a subscriber (which could be a /48, a /60 or /64).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>In contrast, in mobile environments, since the 3GPP specifications allocate a /64 per device, it may be sufficient to intercept traffic from the /64 rather than specific /128's (since each time the device establishes a data connection it gets a new IID).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>A sample architecture which was written for informational purposes is found in [RFC3924].</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Residential Users Security Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The IETF Homenet working group is working on how IPv6 residential network should be done; this obviously includes operational security considerations; but this is still work in progress in early 2020. [RFC8520] is an interesting approach on how firewalls could retrieve and apply specific security policies to some residential devices.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Some residential users have less experience and knowledge about security or networking. As most of the recent hosts, smartphones, tablets all have IPv6 enabled by default, IPv6 security is important for those users. Even with an IPv4-only ISP, those users can get IPv6 Internet access with the help of Teredo tunnels. Several peer-to-peer programs support IPv6 and those programs can initiate a Teredo tunnel through the IPv4 residential gateway, with the consequence of making the internal host reachable from any IPv6 host on the Internet. It is therefore recommended that all host security products (including personal firewalls) are configured with a dual-stack security policy.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>If the residential CPE has IPv6 connectivity, [RFC7084] defines the requirements of an IPv6 CPE and does not take position on the debate of default IPv6 security policy as defined in [RFC6092]:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>outbound only: allowing all internally initiated connections and block all externally initiated ones, which is a common default security policy enforced by IPv4 Residential Gateway doing NAT-PT but it also breaks the end-to-end reachability promise of IPv6. [RFC6092] lists several recommendations to design such a CPE;</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>open/transparent: allowing all internally and externally initiated connections, therefore restoring the end-to-end nature of the Internet for the IPv6 traffic but having a different security policy for IPv6 than for IPv4.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[RFC6092] REC-49 states that a choice must be given to the user to select one of those two policies.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There is also an alternate solution which has been deployed notably by Swisscom: open to all outbound and inbound connections at the exception of a handful of TCP and UDP ports known as vulnerable.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Further Reading</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>There are several documents that describe in more details the security of an IPv6 network; these documents are not written by the IETF and some of them are dated but are listed here for the reader's convenience:</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[NIST]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[NAv6TF_Security]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="ListParagraph"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>[IPv6_Security_Book]</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t></w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Acknowledgements</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>The authors would like to thank the following people for their useful comments: Mikael Abrahamsson, Fred Baker, Mustafa Suha Botsali, Brian Carpenter, Tim Chown, Lorenzo Colitti, Markus de Bruen, Tobias Fiebig, Fernando Gont, Jeffry Handal, Lee Howard, Panos Kampanakis, Erik Kline, Jouni Korhonen, Warren Kumari, Ted Lemon, Mark Lentczner, Jen Linkova (and her detailed review), Gyan S. Mishra, Jordi Palet, Bob Sleigh, Donal Smith, Tarko Tikan, Ole Troan, Bernie Volz (by alphabetical order).</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>IANA Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This memo includes no request to IANA.</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Heading1"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>Security Considerations</w:t>
+			</w:r>
+		</w:p>
+		<w:p>
+			<w:pPr>
+				<w:pStyle w:val="Normal"/>
+			</w:pPr>
+			<w:r>
+				<w:rPr>
+					<w:lang w:val="en-US"/>
+				</w:rPr>
+				<w:t>This memo attempts to give an overview of security considerations of operating an IPv6 network both in an IPv6-only network and in utilizing the most widely deployed IPv4/IPv6 coexistence strategies.</w:t>
+			</w:r>
+		</w:p>
+		<w:sectPr>
+			<w:pgSz w:h="15840" w:w="12240"/>
+			<w:pgMar w:bottom="1400" w:footer="708" w:gutter="0" w:header="708" w:left="1440" w:right="1440" w:top="1440"/>
+			<w:cols w:space="708"/>
+			<w:docGrid w:linePitch="360"/>
+		</w:sectPr>
+	</w:body>
+</w:document>
