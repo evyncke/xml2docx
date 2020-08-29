@@ -235,7 +235,8 @@ def parseXref(elem):
 							
 if __name__ == '__main__':
 #	xmldoc = minidom.parse('draft-ietf-opsec-v6-22.xml')
-	xmldoc = minidom.parse('draft-ietf-intarea-provisioning-domains-00.xml')
+#	xmldoc = minidom.parse('draft-ietf-intarea-provisioning-domains-00.xml')
+	xmldoc = minidom.parse('draft-ietf-drip-arch-03.xml')
 	
 	rfc = xmldoc.getElementsByTagName('rfc')
 
