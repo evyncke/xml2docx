@@ -137,7 +137,6 @@ def parseFigure(elem):
 	print('!!!!! Cannot parse figure')
 	
 def parseList(elem):
-#	print('Begin parseList()')
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
@@ -145,16 +144,23 @@ def parseList(elem):
 			parseText(child, 'ListParagraph')
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
-#	print('End parseList()')
 		
 def parseSection(elem, headingDepth, headingPrefix):
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
+	sectionTitle = None
 	if elem.hasAttribute('title'):
-#		print(headingPrefix, elem.getAttribute('title'))
-		docxBody.appendChild(docxNewParagraph(elem.getAttribute('title'), 'Heading' + str(headingDepth)))
-	else:
-		print('??? This section has not title...')
+		sectionTitle = elem.getAttribute('title')
+	elif elem.nodeName == 'section': # Can be the case for <front> <middle> .... that are also processed by this part
+		# Look after a child node of tag "name"
+		nameChild = elem.getElementsByTagName('name')
+		if nameChild != None:
+			if nameChild[0].nodeType == Node.ELEMENT_NODE:
+				sectionTitle = nameChild[0].childNodes[0].nodeValue
+		else:
+			print('??? This section has not title...') 
+	if sectionTitle != None:
+		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading' + str(headingDepth)))
 	sectionId = 0
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -167,20 +173,22 @@ def parseSection(elem, headingDepth, headingPrefix):
 				headingSuffix = '.' + str(sectionId)
 			# Should create a docx Child ???
 			parseSection(child, headingDepth + 1, headingPrefix + headingSuffix)
-		elif child.nodeName == 't':
-			parseText(child, style = None)
-		elif child.nodeName == 'figure':
-			parseFigure(child)
-		elif child.nodeName == 'textable':
-			parseTextTable(child)
-		elif child.nodeName == 'title':
-			parseTitle(child)
+		elif child.nodeName == 'abstract':
+			parseAbstract(child)
 		elif child.nodeName == 'author':
 			parseAuthor(child)
 		elif child.nodeName == 'date':
 			parseDate(child)
-		elif child.nodeName == 'abstract':
-			parseAbstract(child)
+		elif child.nodeName == 'figure':
+			parseFigure(child)
+		elif child.nodeName == 'name': # Already processed
+			continue
+		elif child.nodeName == 't':
+			parseText(child, style = None)
+		elif child.nodeName == 'textable':
+			parseTextTable(child)
+		elif child.nodeName == 'title':
+			parseTitle(child)
 		else:
 			print('!!!!! Unexpected tag:' + child.tagName)
  
@@ -192,8 +200,6 @@ def parseText(elem, style = None):
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
-#			print('parseText: Text is TEXT_NODE')
-#			print(text.nodeValue)
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName == 'list':
@@ -205,7 +211,6 @@ def parseText(elem, style = None):
 			elif text.nodeName != '#text':
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue, style))
-#	print('End parseText')
 
 def parseTextTable(elem):
 	print('!!!!! Cannot parse TextTable')
@@ -218,7 +223,6 @@ def parseTitle(elem):
 	docxBody.appendChild(docxNewParagraph(textValue, 'Title'))
 
 def parseXref(elem):
-#	print('Begin parseXref') 
 	if elem.nodeValue != None:
 		print('Xref nodeValue: ' , elem.nodeValue)
 	if elem.hasAttribute('target'):
@@ -231,12 +235,12 @@ def parseXref(elem):
 			return child.nodeValue
 		if child.nodeName == 't':
 			parseText(child)
-#	print('End parseXref')
 							
 if __name__ == '__main__':
 #	xmldoc = minidom.parse('draft-ietf-opsec-v6-22.xml')
 #	xmldoc = minidom.parse('draft-ietf-intarea-provisioning-domains-00.xml')
 	xmldoc = minidom.parse('draft-ietf-drip-arch-03.xml')
+#	xmldoc = minidom.parse('draft-vyncke-special-interest-group.xml')
 	
 	rfc = xmldoc.getElementsByTagName('rfc')
 
