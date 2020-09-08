@@ -20,7 +20,8 @@ from xml.dom import minidom, Node
 import xml.dom
 from pprint import pprint
 import sys, getopt
-import io
+import io, os
+import zipfile
 
 def printTree(front):
 	print('All children:')
@@ -385,33 +386,63 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	
 	docxBody.appendChild(sectPrElem)
 	
-	if outFilename == None:
-		outFilename = 'xml2docx.xml'
 	docxFile = io.open(outFilename, 'w', encoding="'utf8'")
 	# Ugly but no other way to put attributes in the top XML 
 	docxFile.write(docxRoot.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'))
 	docxFile.close()
+	print('OpenXML document.xml file is at', outFilename)
 	
+def docxPackage(inFilename, openXML, templateDirectory):
+	docxFilename = inFilename.replace('.xml', '.docx')  # 
+	print('Generating OpenXML packaging file', docxFilename)
+	print("\tUsing template in" + templateDirectory)
+	with zipfile.ZipFile(docxFilename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
+		files = [ '[Content_Types].xml', '_rels/.rels', 'docProps/app.xml', 'docProps/core.xml',
+			# Should not move the output in template directory...
+			'word/fontTable.xml', 'word/document.xml', 'word/settings.xml', 'word/numbering.xml', 'word/webSettings.xml',
+			'word/styles.xml', 'word/theme/theme1.xml', 'word/_rels/document.xml.rels']
+		for file in files:
+			docx.write(templateDirectory + '/' + file, arcname = file)
+
 if __name__ == '__main__':
 	inFilename = None 
 	outFilename = None
+	templateDirectory = None
+	generateDocx = None
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],"hi:o:",["ifile=","ofile="])
+		opts, args = getopt.getopt(sys.argv[1:],"hi:o:t:",["ifile=","ofile=","template=", "docx"])
 	except getopt.GetoptError:
 		print('xml2docx.py -i <inputfile> -o <outputfile>')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print('xml2docx.py -i <inputfile> -o <outputfile>')
+			print('xml2docx.py -i <inputfile> [-o <outputfile>] [--docx]')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inFilename = arg
 		elif opt in ("-o", "--ofile"):
 			outFilename = arg
+		elif opt in ("-t", "--template"):
+			templateDirectory = arg
+		elif opt == '--docx':
+			generateDocx = True
+	if templateDirectory == None: 
+		templateDirectory = os.path.dirname(os.path.abspath(sys.argv[0])) + '/template' # default template is in the executable directory
 	if inFilename == None:
 		print('Missing input filename')
 		sys.exit(2)
+	if outFilename == None:
+		if generateDocx:
+			outFilename = templateDirectory + '/word/document.xml'
+		else:
+			outFilename = 'xml2docx.xml'
+
+	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)
+
+	# Now
+	if generateDocx != None:
+		docxPackage(inFilename, outFilename, templateDirectory)
 	
 #	processXML('draft-ietf-opsec-v6-22.xml')
 #	processXML('draft-ietf-intarea-provisioning-domains-00.xml')
