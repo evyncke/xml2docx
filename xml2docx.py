@@ -58,7 +58,7 @@ def printTree(front):
 #	print("\n----------\n")
 
 
-def docxNewParagraph(textValue, style = None, justification = None):
+def docxNewParagraph(textValue, style = None, justification = None, numberingID = None, indentationLevel = None):
 	if textValue is None:
 		return None
 	docxP = docxRoot.createElement('w:p')
@@ -80,7 +80,21 @@ def docxNewParagraph(textValue, style = None, justification = None):
 		jc =  docxRoot.createElement('w:jc')
 		jc.setAttribute('w:val', justification) 
 		pPr.appendChild(jc)
+	if numberingID != None and indentationLevel != None:
+#				<w:numPr>
+#					<w:ilvl w:val="0"/>
+#					<w:numId w:val="2"/>
+#				</w:numPr>
+		numPr = docxRoot.createElement('w:numPr')
+		ilvl = docxRoot.createElement('w:ilvl ')
+		ilvl.setAttribute('w:val', indentationLevel)
+		numPr.appendChild(ilvl)
+		numId = docxRoot.createElement('w:numId')
+		numId.setAttribute('w:val', numberingID)
+		numPr.appendChild(numId)
+		pPr.appendChild(numPr)
 	docxP.appendChild(pPr)
+	
 # Then handle the actual text
 #	<w:r w:rsidRPr="00C46909">
 #		<w:rPr>
@@ -145,6 +159,36 @@ def parseList(elem):
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 		
+def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentationLevel = None):
+	print("start LI ", elem)
+	for i in range(elem.attributes.length):
+		attrib = elem.attributes.item(i)
+		print("\tLI", attrib.name, ' = ' , attrib.value)
+
+	textValue = ''
+	for text in elem.childNodes:
+		if text.nodeType == Node.TEXT_NODE:
+			textValue += text.nodeValue
+		if elem.nodeType == Node.ELEMENT_NODE:
+			if text.nodeName == 'xref':
+				textValue = textValue + parseXref(text)
+			elif text.nodeName == '#text':
+				print('ignoring Text is ELEMENT_NODE: ', text.nodeName)
+			else:
+				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
+	docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))
+	print("end LI ", textValue)
+
+def parseOList(elem):
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		if child.nodeName == 'li':
+			parseListItem(child, numberingID = '1', indentationLevel = '0')  # numID = 1 is defined in numbering.xml as enumeration list
+		else:
+			print('!!!! Unexpected List child: ', child.nodeName)
+
+
 def parseSection(elem, headingDepth, headingPrefix):
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
@@ -175,20 +219,30 @@ def parseSection(elem, headingDepth, headingPrefix):
 			parseSection(child, headingDepth + 1, headingPrefix + headingSuffix)
 		elif child.nodeName == 'abstract':
 			parseAbstract(child)
+		elif child.nodeName == 'area':
+			print("Skipping area...")
 		elif child.nodeName == 'author':
 			parseAuthor(child)
 		elif child.nodeName == 'date':
 			parseDate(child)
 		elif child.nodeName == 'figure':
 			parseFigure(child)
+		elif child.nodeName == 'keyword':
+			print("Skipping keyword...")
 		elif child.nodeName == 'name': # Already processed
 			continue
+		elif child.nodeName == 'ol':
+				parseOList(child)
 		elif child.nodeName == 't':
 			parseText(child, style = None)
 		elif child.nodeName == 'textable':
 			parseTextTable(child)
 		elif child.nodeName == 'title':
 			parseTitle(child)
+		elif child.nodeName == 'ul':
+				parseUList(child)
+		elif child.nodeName == 'workgroup':
+			print("Skipping workgroup...")
 		else:
 			print('!!!!! Unexpected tag:' + child.tagName)
  
@@ -221,6 +275,15 @@ def parseTitle(elem):
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 	docxBody.appendChild(docxNewParagraph(textValue, 'Title'))
+
+def parseUList(elem):
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		if child.nodeName == 'li':
+			parseListItem(child, numberingID = '2', indentationLevel = '0')  # numID = 2 is defined in numbering.xml as bullet list
+		else:
+			print('!!!! Unexpected List child: ', child.nodeName)
 
 def parseXref(elem):
 	if elem.nodeValue != None:
