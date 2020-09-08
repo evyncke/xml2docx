@@ -156,7 +156,7 @@ def parseList(elem):
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
 		if child.nodeName == 't':
-			parseText(child, 'ListParagraph')
+			parseText(child, style = 'ListParagraph', numberingID = '2', indentationLevel = '0')  # numID = 2 is defined in numbering.xml as bullet list
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 		
@@ -247,7 +247,7 @@ def parseSection(elem, headingDepth, headingPrefix):
 		else:
 			print('!!!!! Unexpected tag:' + child.tagName)
  
-def parseText(elem, style = None):
+def parseText(elem, style = None, numberingID = None, indentationLevel = None):
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
 		print("\t", attrib.name, ' = ' , attrib.value)
@@ -258,14 +258,14 @@ def parseText(elem, style = None):
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName == 'list':
-				docxBody.appendChild(docxNewParagraph(textValue, style))  # Need to emit the first part of the text
+				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
 				textValue = ''
 				parseList(text)
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
 			elif text.nodeName != '#text':
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
-	docxBody.appendChild(docxNewParagraph(textValue, style))
+	docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))
 
 def parseTextTable(elem):
 	print('!!!!! Cannot parse TextTable')
