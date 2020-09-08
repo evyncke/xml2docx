@@ -19,7 +19,7 @@
 from xml.dom import minidom, Node
 import xml.dom
 from pprint import pprint
-import sys
+import sys, getopt
 import io
 
 def printTree(front):
@@ -299,12 +299,12 @@ def parseXref(elem):
 		if child.nodeName == 't':
 			parseText(child)
 							
-if __name__ == '__main__':
-#	xmldoc = minidom.parse('draft-ietf-opsec-v6-22.xml')
-#	xmldoc = minidom.parse('draft-ietf-intarea-provisioning-domains-00.xml')
-	xmldoc = minidom.parse('draft-ietf-drip-arch-03.xml')
-#	xmldoc = minidom.parse('draft-vyncke-special-interest-group.xml')
-	
+
+def processXML(inFilename, outFilename = 'xml2docx.xml'):
+	global xmldoc
+	global docxRoot, docxBody, docxDocument
+		
+	xmldoc = minidom.parse(inFilename)
 	rfc = xmldoc.getElementsByTagName('rfc')
 
 	front = xmldoc.getElementsByTagName('front')[0]
@@ -357,14 +357,6 @@ if __name__ == '__main__':
 	parseSection(front, 0, '')
 	parseSection(middle, 0, '')
 	
-# Still need to add page format
-#	<w:sectPr w:rsidR="008B532F" w:rsidRPr="00C46909">
-#		<w:pgSz w:w="12240" w:h="15840"/>
-#		<w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-#		<w:cols w:space="708"/>
-#		<w:docGrid w:linePitch="360"/>
-#</w:sectPr>
-
 	sectPrElem = docxRoot.createElement('w:sectPr')
 	
 	pgSzElem = docxRoot.createElement('w:pgSz')
@@ -393,9 +385,35 @@ if __name__ == '__main__':
 	
 	docxBody.appendChild(sectPrElem)
 	
-	
-#	print(docxRoot.toprettyxml())
-	docxFile = io.open('xml2doc.xml', 'w', encoding='utf8')
-	docxFile.write(docxRoot.toprettyxml())
-#	docxFile.write(docxRoot.toprettyxml(encoding='UTF-8'))
+	if outFilename == None:
+		outFilename = 'xml2docx.xml'
+	docxFile = io.open(outFilename, 'w', encoding="'utf8'")
+	# Ugly but no other way to put attributes in the top XML 
+	docxFile.write(docxRoot.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'))
 	docxFile.close()
+	
+if __name__ == '__main__':
+	inFilename = None 
+	outFilename = None
+	try:
+		opts, args = getopt.getopt(sys.argv[1:],"hi:o:",["ifile=","ofile="])
+	except getopt.GetoptError:
+		print('xml2docx.py -i <inputfile> -o <outputfile>')
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print('xml2docx.py -i <inputfile> -o <outputfile>')
+			sys.exit()
+		elif opt in ("-i", "--ifile"):
+			inFilename = arg
+		elif opt in ("-o", "--ofile"):
+			outFilename = arg
+	if inFilename == None:
+		print('Missing input filename')
+		sys.exit(2)
+	processXML(inFilename, outFilename)
+	
+#	processXML('draft-ietf-opsec-v6-22.xml')
+#	processXML('draft-ietf-intarea-provisioning-domains-00.xml')
+#	processXML('draft-vyncke-special-interest-group.xml')
+
