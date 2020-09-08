@@ -15,7 +15,7 @@
 	xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex"
 	xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex">
 	<w:zoom w:percent="240"/>
-	<w:proofState w:spelling="clean" w:grammar="clean"/>
+	<w:proofState w:spelling="dirty" w:grammar="dirty"/>
 	<w:defaultTabStop w:val="720"/>
 	<w:characterSpacingControl w:val="doNotCompress"/>
 	<w:compat>
