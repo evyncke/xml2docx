@@ -41,24 +41,6 @@ def printTree(front):
 				print("\t\tTEXT: ", child.nodeValue)
 	print("\n----------\n")
 
-
-#print('All children in middle:')
-#for elem in middle.childNodes:
-#	if elem.nodeType != Node.ELEMENT_NODE:
-#		continue
-#	print(elem.nodeName)
-#	print("Attributes:")
-#	for i in range(elem.attributes.length):
-#		attrib = elem.attributes.item(i)
-#		print("\t", attrib.name, ' = ' , attrib.value)
-#	print("Children:")
-#	for child in elem.childNodes:
-#		if child.nodeType != Node.ELEMENT_NODE:
-#			continue
-#		pprint(child.nodeName)
-#	print("\n----------\n")
-
-
 def docxNewParagraph(textValue, style = None, justification = None, numberingID = None, indentationLevel = None):
 	if textValue is None:
 		return None
@@ -125,6 +107,16 @@ def parseAbstract(elem):
 		else:
 			print('Unexpected tagName in Abstract: ', child.nodeName)
 
+def parseArea(elem):
+	textValue = 'Area: '
+	for text in elem.childNodes:
+		if text.nodeType == Node.TEXT_NODE:
+			textValue += text.nodeValue
+		if elem.nodeType == Node.ELEMENT_NODE:
+			if text.nodeName != '#text':
+				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
+	docxBody.appendChild(docxNewParagraph(textValue))
+
 def parseAuthor(elem):
 	if elem.hasAttribute('fullname'):
 		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname'), justification = 'right'))
@@ -151,6 +143,16 @@ def parseDate(elem):
 def parseFigure(elem):
 	print('!!!!! Cannot parse figure')
 	
+def parseKeyword(elem):
+	textValue = 'Keyword: '
+	for text in elem.childNodes:
+		if text.nodeType == Node.TEXT_NODE:
+			textValue += text.nodeValue
+		if elem.nodeType == Node.ELEMENT_NODE:
+			if text.nodeName != '#text':
+				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
+	docxBody.appendChild(docxNewParagraph(textValue))
+
 def parseList(elem):
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -221,7 +223,7 @@ def parseSection(elem, headingDepth, headingPrefix):
 		elif child.nodeName == 'abstract':
 			parseAbstract(child)
 		elif child.nodeName == 'area':
-			print("Skipping area...")
+			parseArea(child)
 		elif child.nodeName == 'author':
 			parseAuthor(child)
 		elif child.nodeName == 'date':
@@ -229,7 +231,7 @@ def parseSection(elem, headingDepth, headingPrefix):
 		elif child.nodeName == 'figure':
 			parseFigure(child)
 		elif child.nodeName == 'keyword':
-			print("Skipping keyword...")
+			parseKeyword(child)
 		elif child.nodeName == 'name': # Already processed
 			continue
 		elif child.nodeName == 'ol':
@@ -243,7 +245,7 @@ def parseSection(elem, headingDepth, headingPrefix):
 		elif child.nodeName == 'ul':
 				parseUList(child)
 		elif child.nodeName == 'workgroup':
-			print("Skipping workgroup...")
+			parseWorkgroup(child)
 		else:
 			print('!!!!! Unexpected tag:' + child.tagName)
  
@@ -285,6 +287,16 @@ def parseUList(elem):
 			parseListItem(child, numberingID = '2', indentationLevel = '0')  # numID = 2 is defined in numbering.xml as bullet list
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
+
+def parseWorkgroup(elem):
+	textValue = 'Workgroup: '
+	for text in elem.childNodes:
+		if text.nodeType == Node.TEXT_NODE:
+			textValue += text.nodeValue
+		if elem.nodeType == Node.ELEMENT_NODE:
+			if text.nodeName != '#text':
+				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
+	docxBody.appendChild(docxNewParagraph(textValue))
 
 def parseXref(elem):
 	if elem.nodeValue != None:
@@ -443,8 +455,3 @@ if __name__ == '__main__':
 	# Now
 	if generateDocx != None:
 		docxPackage(inFilename, outFilename, templateDirectory)
-	
-#	processXML('draft-ietf-opsec-v6-22.xml')
-#	processXML('draft-ietf-intarea-provisioning-domains-00.xml')
-#	processXML('draft-vyncke-special-interest-group.xml')
-
