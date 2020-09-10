@@ -41,7 +41,7 @@ def printTree(front):
 				print("\t\tTEXT: ", child.nodeValue)
 	print("\n----------\n")
 
-def docxNewParagraph(textValue, style = None, justification = None, numberingID = None, indentationLevel = None):
+def docxNewParagraph(textValue, style = 'Normal', justification = None, numberingID = None, indentationLevel = None):
 	if textValue is None:
 		return None
 	docxP = docxRoot.createElement('w:p')
