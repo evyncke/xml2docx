@@ -410,11 +410,12 @@ def docxPackage(inFilename, openXML, templateDirectory):
 	print("\tUsing template in" + templateDirectory)
 	with zipfile.ZipFile(docxFilename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
 		files = [ '[Content_Types].xml', '_rels/.rels', 'docProps/app.xml', 'docProps/core.xml',
-			# Should not move the output in template directory...
-			'word/fontTable.xml', 'word/document.xml', 'word/settings.xml', 'word/numbering.xml', 'word/webSettings.xml',
+			# Should not move the output in template directory... 'word/document.xml', 
+			'word/fontTable.xml', 'word/settings.xml', 'word/numbering.xml', 'word/webSettings.xml',
 			'word/styles.xml', 'word/theme/theme1.xml', 'word/_rels/document.xml.rels']
 		for file in files:
 			docx.write(templateDirectory + '/' + file, arcname = file)
+		docx.write(openXML, arcname = 'word/document.xml') 
 
 if __name__ == '__main__':
 	inFilename = None 
