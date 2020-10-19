@@ -404,13 +404,13 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	docxFile.close()
 	print('OpenXML document.xml file is at', outFilename)
 	
-def docxPackage(inFilename, openXML, templateDirectory):
-	docxFilename = inFilename.replace('.xml', '.docx')  # 
+def docxPackage(docxFilename, openXML, templateDirectory):
+#	docxFilename = inFilename.replace('.xml', '.docx')  # 
 	print('Generating OpenXML packaging file', docxFilename)
 	print("\tUsing template in" + templateDirectory)
 	with zipfile.ZipFile(docxFilename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
 		files = [ '[Content_Types].xml', '_rels/.rels', 'docProps/app.xml', 'docProps/core.xml',
-			# Should not move the output in template directory... 'word/document.xml', 
+			# Should not move the output in template directory... 'word/document.xml', 	
 			'word/fontTable.xml', 'word/settings.xml', 'word/numbering.xml', 'word/webSettings.xml',
 			'word/styles.xml', 'word/theme/theme1.xml', 'word/_rels/document.xml.rels']
 		for file in files:
@@ -421,9 +421,9 @@ if __name__ == '__main__':
 	inFilename = None 
 	outFilename = None
 	templateDirectory = None
-	generateDocx = None
+	docxFilename = None
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],"hi:o:t:",["ifile=","ofile=","template=", "docx"])
+		opts, args = getopt.getopt(sys.argv[1:],"d:hi:o:t:",["ifile=","ofile=","template=", "docx="])
 	except getopt.GetoptError:
 		print('xml2docx.py -i <inputfile> -o <outputfile>')
 		sys.exit(2)
@@ -437,8 +437,8 @@ if __name__ == '__main__':
 			outFilename = arg
 		elif opt in ("-t", "--template"):
 			templateDirectory = arg
-		elif opt == '--docx':
-			generateDocx = True
+		elif opt in ("-d", "--docx"):
+			docxFilename = arg
 	if templateDirectory == None: 
 		templateDirectory = os.path.dirname(os.path.abspath(sys.argv[0])) + '/template' # default template is in the executable directory
 	if inFilename == None:
@@ -453,6 +453,7 @@ if __name__ == '__main__':
 	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)
 
-	# Now
-	if generateDocx != None:
-		docxPackage(inFilename, outFilename, templateDirectory)
+	# Now, let's generate the .DOCX file
+	if docxFilename == None:
+		docxFilename = inFilename.replace('.xml', '.docx')
+	docxPackage(docxFilename, outFilename, templateDirectory)
