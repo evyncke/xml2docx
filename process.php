@@ -8,23 +8,15 @@ $local_file_type = $_FILES['xmlfile']['type'] ;
 $local_file_size = $_FILES['xmlfile']['size'] ;
 
 $local_word_xml = tempnam(sys_get_temp_dir(), 'XML') . ".xml" ;
-$local_docx = preg_replace('/.xml$/', '.docx', $local_word_xml) ;
+$local_docx = tempnam(sys_get_temp_dir(), 'DOC') . ".docx" ;
 
-#print("local_xmlfname = $local_xmlfname<br/>") ;
-#print("local_docx = $local_docx<br/>") ;
-#print("local_word_xml = $local_word_xml<br/>") ;
-
-$shell_command = escapeshellcmd("./xml2docx.py --docx -i $local_xmlfname  -o $local_word_xml") ;
+$shell_command = escapeshellcmd("/usr/bin/python3 ./xml2docx.py --docx $local_docx --ifile $local_xmlfname  --ofile $local_word_xml") ;
 exec($shell_command, $output, $return_code) ;
-#var_dump($output) ;
-#print("return_code = $return_code<br/>\n") ;
+
+# Send the right headers
 header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 header('Content-Disposition: attachment; filename="rfc.docx"');
 readfile($local_docx) ;
-#
-#unlink($local_xmlfname) ;
-#unlink($local_docx) ;
-#unlink($local_word_xml) ;
 
 exit ;
 ?>

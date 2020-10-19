@@ -405,7 +405,6 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	print('OpenXML document.xml file is at', outFilename)
 	
 def docxPackage(docxFilename, openXML, templateDirectory):
-#	docxFilename = inFilename.replace('.xml', '.docx')  # 
 	print('Generating OpenXML packaging file', docxFilename)
 	print("\tUsing template in" + templateDirectory)
 	with zipfile.ZipFile(docxFilename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
@@ -429,7 +428,7 @@ if __name__ == '__main__':
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print('xml2docx.py -i <inputfile> [-o <outputfile>] [--docx]')
+			print('xml2docx.py -i <inputfile> [-o <outputfile>] [--docx <result.docx>]')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inFilename = arg
@@ -445,15 +444,15 @@ if __name__ == '__main__':
 		print('Missing input filename')
 		sys.exit(2)
 	if outFilename == None:
-		if generateDocx:
+		if docxFilename != None:
 			outFilename = templateDirectory + '/word/document.xml'
 		else:
 			outFilename = 'xml2docx.xml'
+	if docxFilename == None:
+		docxFilename = inFilename.replace('.xml', '.docx')
 
 	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)
 
 	# Now, let's generate the .DOCX file
-	if docxFilename == None:
-		docxFilename = inFilename.replace('.xml', '.docx')
 	docxPackage(docxFilename, outFilename, templateDirectory)
