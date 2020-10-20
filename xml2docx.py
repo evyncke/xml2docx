@@ -423,6 +423,15 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	docxFile.write(docxRoot.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'))
 	docxFile.close()
 	print('OpenXML document.xml file is at', outFilename)
+
+def myParseDate(s):
+	try:
+		# Let's first try with short month names
+		date = datetime.datetime.strptime(s,'%d %b %Y')
+	except ValueError:
+		# Then try with full length month names
+		date = datetime.datetime.strptime(s,'%d %B %Y')
+	return date
 	
 def generateDocPropsCore():
 	xmlcore = minidom.parse(templateDirectory + '/docProps/core.xml')
@@ -437,7 +446,7 @@ def generateDocPropsCore():
 		createdElem = xmlcore.getElementsByTagName('dcterms:created')[0]
 		for child in createdElem.childNodes:
 			createdElem.removeChild(child)
-		createdDate = datetime.datetime.strptime(rfcDate,'%d %b %Y')
+		createdDate = myParseDate(rfcDate)	
 		text = xmlcore.createTextNode(createdDate.strftime('%Y-%m-%dT%H:%M:%SZ'))
 		createdElem.appendChild(text)
 	if len(rfcKeywords) > 0:
