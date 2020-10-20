@@ -3,6 +3,7 @@ if (!isset($_FILES['xmlfile']) or $_FILES['xmlfile']['error'] != '') {
 	die("Cannot upload file: $_FILES[xmlfile][error]") ;
 }
 $remote_xmlfname = $_FILES['xmlfile']['name'] ;
+$remote_docx = preg_replace('/.xml$/', '.docx', $remote_xmlfname) ;
 $local_xmlfname = $_FILES['xmlfile']['tmp_name'] ;
 $local_file_type = $_FILES['xmlfile']['type'] ;
 $local_file_size = $_FILES['xmlfile']['size'] ;
@@ -15,7 +16,7 @@ exec($shell_command, $output, $return_code) ;
 
 # Send the right headers
 header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-header('Content-Disposition: attachment; filename="rfc.docx"');
+header("Content-Disposition: attachment; filename=\"$remote_docx\"");
 readfile($local_docx) ;
 
 exit ;
