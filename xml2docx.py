@@ -22,6 +22,13 @@ from pprint import pprint
 import sys, getopt
 import io, os
 import zipfile
+import tempfile, datetime
+
+# Same states to be kept
+rfcDate = None
+rfcAuthors = []
+rfcTitle = None
+rfcKeywords = []
 
 def printTree(front):
 	print('All children:')
@@ -118,8 +125,11 @@ def parseArea(elem):
 	docxBody.appendChild(docxNewParagraph(textValue))
 
 def parseAuthor(elem):
+	global rfcAuthors
+	
 	if elem.hasAttribute('fullname'):
 		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname'), justification = 'right'))
+		rfcAuthors.append(elem.getAttribute('fullname'))
 	else:
 		author = ''
 		if elem.hasAttribute('initials'):
@@ -128,8 +138,11 @@ def parseAuthor(elem):
 			author = author + elem.getAttribute('surname')
 		if author != '':
 			docxBody.appendChild(docxNewParagraph(author, justification = 'right'))
+			rfcAuthors.append(author)
 	
 def parseDate(elem):
+	global rfcDate
+	
 	dateString = ''
 	if elem.hasAttribute('day'):
 		dateString = elem.getAttribute('day') + ' '
@@ -139,15 +152,19 @@ def parseDate(elem):
 		dateString = dateString + elem.getAttribute('year')
 	if dateString != '':
 		docxBody.appendChild(docxNewParagraph(dateString, justification = 'right'))
+		rfcDate = dateString
 	
 def parseFigure(elem):
 	print('!!!!! Cannot parse figure')
 	
 def parseKeyword(elem):
+	global rfcKeywords
+	
 	textValue = 'Keyword: '
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
+			rfcKeywords.append(text.nodeValue)
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
@@ -273,11 +290,14 @@ def parseTextTable(elem):
 	print('!!!!! Cannot parse TextTable')
 	
 def parseTitle(elem):
+	global rfcTitle
+	
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 	docxBody.appendChild(docxNewParagraph(textValue, 'Title'))
+	rfcTitle = textValue 
 
 def parseUList(elem):
 	for child in elem.childNodes:
@@ -404,17 +424,56 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	docxFile.close()
 	print('OpenXML document.xml file is at', outFilename)
 	
+def generateDocPropsCore():
+	xmlcore = minidom.parse(templateDirectory + '/docProps/core.xml')
+
+	if len(rfcAuthors) > 0:
+		creatorElem = xmlcore.getElementsByTagName('dc:creator')[0]
+		for child in creatorElem.childNodes:
+			creatorElem.removeChild(child)
+		text = xmlcore.createTextNode(', '.join(rfcAuthors))
+		creatorElem.appendChild(text)
+	if len(rfcKeywords) > 0:
+		keywordsElem = xmlcore.getElementsByTagName('cp:keywords')[0]
+		for child in keywordsElem.childNodes:
+			keywordsElem.removeChild(child)
+		text = xmlcore.createTextNode(', '.join(rfcKeywords))
+		keywordsElem.appendChild(text)
+	if rfcTitle != None:
+		titleElem = xmlcore.getElementsByTagName('dc:title')[0]
+		for child in titleElem.childNodes:
+			titleElem.removeChild(child)
+		text = xmlcore.createTextNode(rfcTitle)
+		titleElem.appendChild(text)
+	# Now, let's say that this script did it ;-)
+	modifiedByElem = xmlcore.getElementsByTagName('cp:lastModifiedBy')[0]
+	for child in modifiedByElem.childNodes:
+		modifiedByElem.removeChild(child)
+	text = xmlcore.createTextNode('Xml2rfc')
+	modifiedByElem.appendChild(text)
+	modifiedElem = xmlcore.getElementsByTagName('dcterms:modified')[0]
+	for child in modifiedElem.childNodes:
+		modifiedElem.removeChild(child)
+	now = datetime.datetime.utcnow()
+	text = xmlcore.createTextNode(now.strftime('%Y-%m-%dT%H:%M:%SZ'))
+	modifiedElem.appendChild(text)
+	
+	print(xmlcore.toprettyxml())
+	return xmlcore.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
+	
 def docxPackage(docxFilename, openXML, templateDirectory):
 	print('Generating OpenXML packaging file', docxFilename)
 	print("\tUsing template in" + templateDirectory)
+	coreXML = generateDocPropsCore()
 	with zipfile.ZipFile(docxFilename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
-		files = [ '[Content_Types].xml', '_rels/.rels', 'docProps/app.xml', 'docProps/core.xml',
+		files = [ '[Content_Types].xml', '_rels/.rels', 'docProps/app.xml', 
 			# Should not move the output in template directory... 'word/document.xml', 	
 			'word/fontTable.xml', 'word/settings.xml', 'word/numbering.xml', 'word/webSettings.xml',
 			'word/styles.xml', 'word/theme/theme1.xml', 'word/_rels/document.xml.rels']
 		for file in files:
 			docx.write(templateDirectory + '/' + file, arcname = file)
-		docx.write(openXML, arcname = 'word/document.xml') 
+		docx.write(openXML, arcname = 'word/document.xml')
+		docx.writestr('docProps/core.xml', coreXML)
 
 if __name__ == '__main__':
 	inFilename = None 
