@@ -430,7 +430,10 @@ def myParseDate(s):
 		date = datetime.datetime.strptime(s,'%d %b %Y')
 	except ValueError:
 		# Then try with full length month names
-		date = datetime.datetime.strptime(s,'%d %B %Y')
+		try:
+			date = datetime.datetime.strptime(s,'%d %B %Y')
+		except ValueError:
+			date = datetime.datetime.utcnow()  # Giving up...
 	return date
 	
 def generateDocPropsCore():
