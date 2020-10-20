@@ -433,6 +433,13 @@ def generateDocPropsCore():
 			creatorElem.removeChild(child)
 		text = xmlcore.createTextNode(', '.join(rfcAuthors))
 		creatorElem.appendChild(text)
+	if rfcDate != None:
+		createdElem = xmlcore.getElementsByTagName('dcterms:created')[0]
+		for child in createdElem.childNodes:
+			createdElem.removeChild(child)
+		createdDate = datetime.datetime.strptime(rfcDate,'%d %b %Y')
+		text = xmlcore.createTextNode(createdDate.strftime('%Y-%m-%dT%H:%M:%SZ'))
+		createdElem.appendChild(text)
 	if len(rfcKeywords) > 0:
 		keywordsElem = xmlcore.getElementsByTagName('cp:keywords')[0]
 		for child in keywordsElem.childNodes:
@@ -458,7 +465,6 @@ def generateDocPropsCore():
 	text = xmlcore.createTextNode(now.strftime('%Y-%m-%dT%H:%M:%SZ'))
 	modifiedElem.appendChild(text)
 	
-	print(xmlcore.toprettyxml())
 	return xmlcore.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
 	
 def docxPackage(docxFilename, openXML, templateDirectory):
