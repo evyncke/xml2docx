@@ -7,15 +7,15 @@
 	<Pages>1</Pages>
 	<Words>27</Words>
 	<Characters>160</Characters>
-	<Application>Microsoft Office Word</Application>
+	<Application>Xml2Docx convertor</Application>
 	<DocSecurity>0</DocSecurity>
 	<Lines>1</Lines>
 	<Paragraphs>1</Paragraphs>
 	<ScaleCrop>false</ScaleCrop>
-	<Company>IETF</Company>
+	<Company>IETF open source</Company>
 	<LinksUpToDate>false</LinksUpToDate>
 	<CharactersWithSpaces>186</CharactersWithSpaces>
 	<SharedDoc>false</SharedDoc>
 	<HyperlinksChanged>false</HyperlinksChanged>
-	<AppVersion>16.0000</AppVersion>
+	<AppVersion>1.0000</AppVersion>
 </Properties>
