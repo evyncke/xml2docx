@@ -283,9 +283,14 @@ def parseSeriesInfo(elem):
 
 		
 def parseText(elem, style = None, numberingID = None, indentationLevel = None):
+	# Mainly for debugging
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
-		print("\t", attrib.name, ' = ' , attrib.value)
+		if attrib.name == 'pn': 	# Let's ignore this marking as no obvious requirement or support in Office OpenXML
+			continue
+		if attrib.name == 'indent':	# TODO later if really required
+			continue
+		print("\tparseText unexpected attribute: ", attrib.name, ' = ' , attrib.value)
 
 	textValue = ''
 	for text in elem.childNodes:
