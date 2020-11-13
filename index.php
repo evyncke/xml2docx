@@ -16,10 +16,14 @@
 #
 #-->
 <head>
-<title>XML to Open DOCX</title>
+<title>XML to Office OpenXML .DOCX</title>
+<?php
+// Allow some local CSS, JS, ...
+if (is_readable('header.inc')) readfile('header.inc') ;
+?>
 </head>
 <body language="en">
-<h1>IETF XML2RFC file conversion into Office Open .DOCX</h1>
+<h1>IETF XML2RFC file conversion into Office OpenXML .DOCX</h1>
 
 <form enctype="multipart/form-data" action="process.php" method="post">
   <input type="hidden" name="MAX_FILE_SIZE" value="300000" />
