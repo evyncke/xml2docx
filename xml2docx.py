@@ -255,6 +255,8 @@ def parseSection(elem, headingDepth, headingPrefix):
 				parseOList(child)
 		elif child.nodeName == 't':
 			parseText(child, style = None)
+		elif child.nodeName == 'seriesInfo':
+			parseSeriesInfo(child)
 		elif child.nodeName == 'textable':
 			parseTextTable(child)
 		elif child.nodeName == 'title':
@@ -264,8 +266,22 @@ def parseSection(elem, headingDepth, headingPrefix):
 		elif child.nodeName == 'workgroup':
 			parseWorkgroup(child)
 		else:
-			print('!!!!! Unexpected tag:' + child.tagName)
+			print('!!!!! Unexpected tag: ' + child.tagName)
  
+def parseSeriesInfo(elem):
+	seriesInfoString = ''
+	if elem.hasAttribute('name'):
+		seriesInfoString = elem.getAttribute('name')
+	if elem.hasAttribute('value'):
+		seriesInfoString = seriesInfoString+ elem.getAttribute('value') + ' '
+	else:
+		seriesInfoString = seriesInfoString + ' '
+	if elem.hasAttribute('stream'):
+		seriesInfoString = seriesInfoString + ' (stream: ' + elem.getAttribute('stream') + ')'
+	if seriesInfoString != '':
+		docxBody.appendChild(docxNewParagraph(seriesInfoString, justification = 'right'))
+
+		
 def parseText(elem, style = None, numberingID = None, indentationLevel = None):
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
