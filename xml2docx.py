@@ -148,6 +148,17 @@ def parseAuthor(elem):
 		if author != '':
 			docxBody.appendChild(docxNewParagraph(author, justification = 'right'))
 			rfcAuthors.append(author)
+
+def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only text
+	if elem.nodeValue != None:
+		print('Eref nodeValue: ' , elem.nodeValue)
+	if elem.nodeType == Node.TEXT_NODE:
+		print('Eref node is TEXT_NODE')
+	for child in elem.childNodes:
+		if child.nodeType == Node.TEXT_NODE:
+			return child.nodeValue
+		else:
+			print('!!!! parseBcp14 unexpected nodeType: ' + child.nodeType)
 	
 def parseBoilerPlate(elem):
 	for child in elem.childNodes:
@@ -173,18 +184,19 @@ def parseDate(elem):
 		docxBody.appendChild(docxNewParagraph(dateString, justification = 'right'))
 		rfcDate = dateString
 	
-def parseEref(elem):
+def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 	if elem.nodeValue != None:
 		print('Eref nodeValue: ' , elem.nodeValue)
-	if elem.hasAttribute('target'):
+	if elem.hasAttribute('target'):	# one and only mandatory attribute
 		return '[' + elem.getAttribute('target') + ']'
+	# Only target attribute, so, quite useless to parse other attributes
 	if elem.nodeType == Node.TEXT_NODE:
 		print('Eref node is TEXT_NODE')
-	# Only target attribute, so, quite useless to parse attributes
 	for child in elem.childNodes:
 		if child.nodeType == Node.TEXT_NODE:
 			return child.nodeValue
 		if child.nodeName == 't':
+			print("parseEref recurse into t !!!")
 			parseText(child)
 
 def parseFigure(elem):
@@ -210,7 +222,7 @@ def parseList(elem):
 		if child.nodeName == 't':
 			parseText(child, style = 'ListParagraph', numberingID = '2', indentationLevel = '0')  # numID = 2 is defined in numbering.xml as bullet list
 		else:
-			print('!!!! Unexpected List child: ', child.nodeName)
+			print('!!!! parseList, unexpected child: ', child.nodeName)
 		
 def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentationLevel = None):
 	print("start LI ", elem)
@@ -223,12 +235,16 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
-			if text.nodeName == 'xref':
+			if text.nodeName == 'bcp14':
+				textValue = textValue + parseBcp14(text)
+			elif text.nodeName == 'eref':
 				textValue = textValue + parseXref(text)
-			elif text.nodeName == '#text':
-				print('ignoring Text is ELEMENT_NODE: ', text.nodeName)
-			else:
-				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
+			elif text.nodeName == 'xref':
+				textValue = textValue + parseXref(text)
+			elif text.nodeName != '#text':
+				print('!!!!! parseListItem: Text is ELEMENT_NODE: ', text.nodeName)
+#			else:
+#				print('parseListItem ignoring Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))
 	print("end LI ", textValue)
 
@@ -334,7 +350,9 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None):
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
-			if text.nodeName == 'eref':
+			if text.nodeName == 'bcp14':
+				textValue = textValue + parseBcp14(text)
+			elif text.nodeName == 'eref':
 				textValue = textValue + parseEref(text)
 			elif text.nodeName == 'list':
 				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
@@ -378,19 +396,18 @@ def parseWorkgroup(elem):
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue))
 
-def parseXref(elem):
+def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 	if elem.nodeValue != None:
 		print('Xref nodeValue: ' , elem.nodeValue)
-	if elem.hasAttribute('target'):
+	if elem.hasAttribute('target'):	# One and only mandatory attribute
 		return '[' + elem.getAttribute('target') + ']'
 	if elem.nodeType == Node.TEXT_NODE:
 		print('Xref node is TEXT_NODE')
-	# Only target attribute, so, quite useless to parse attributes
+	# Only target attribute, so, quite useless to parse further for more attributes
 	for child in elem.childNodes:
 		if child.nodeType == Node.TEXT_NODE:
 			return child.nodeValue
-		if child.nodeName == 't':
-			parseText(child)
+		print('!!!! parseXref, unexpected child.nodeName: ' + child.nodeName)	# Only text is allowed
 							
 
 def processXML(inFilename, outFilename = 'xml2docx.xml'):
