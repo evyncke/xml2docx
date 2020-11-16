@@ -133,12 +133,25 @@ def parseArea(elem):
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue))
 
-def parseAuthor(elem):
+def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 	global rfcAuthors
-	
-	if elem.hasAttribute('fullname'):
-		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname'), justification = 'right'))
-		rfcAuthors.append(elem.getAttribute('fullname'))
+
+	# looking for the organization element as in https://tools.ietf.org/html/rfc7991#section-2.35 that can only contain text
+	organization = ''
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		elif child.nodeName == 'organization':
+			for grandchild in child.childNodes:
+				if grandchild.nodeType == Node.TEXT_NODE:
+					organization = ', ' + grandchild.nodeValue
+
+	if elem.hasAttribute('asciiFullname'):
+		docxBody.appendChild(docxNewParagraph(elem.getAttribute('asciiFullname') + organization, justification = 'right'))
+		rfcAuthors.append(elem.getAttribute('asciiFullname') + organization)
+	elif elem.hasAttribute('fullname'):
+		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname') + organization, justification = 'right'))
+		rfcAuthors.append(elem.getAttribute('fullname') + organization)
 	else:
 		author = ''
 		if elem.hasAttribute('initials'):
@@ -146,14 +159,14 @@ def parseAuthor(elem):
 		if elem.hasAttribute('surname'):
 			author = author + elem.getAttribute('surname')
 		if author != '':
-			docxBody.appendChild(docxNewParagraph(author, justification = 'right'))
-			rfcAuthors.append(author)
+			docxBody.appendChild(docxNewParagraph(author + organization, justification = 'right'))
+			rfcAuthors.append(author + organization)
 
 def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only text
 	if elem.nodeValue != None:
-		print('Eref nodeValue: ' , elem.nodeValue)
+		print('Bcp14 nodeValue: ' , elem.nodeValue)
 	if elem.nodeType == Node.TEXT_NODE:
-		print('Eref node is TEXT_NODE')
+		print('Bcp14 node is TEXT_NODE')
 	for child in elem.childNodes:
 		if child.nodeType == Node.TEXT_NODE:
 			return child.nodeValue
