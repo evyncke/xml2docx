@@ -140,6 +140,16 @@ def parseAuthor(elem):
 			docxBody.appendChild(docxNewParagraph(author, justification = 'right'))
 			rfcAuthors.append(author)
 	
+def parseBoilerPlate(elem):
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		elif child.nodeName == 'section':
+			print('parseBoilerPlate calling parseSection()')
+			parseSection(child, 0)
+		else:
+			print('Unexpected tagName in BoilerPlate: ', child.nodeName)
+
 def parseDate(elem):
 	global rfcDate
 	
@@ -154,6 +164,20 @@ def parseDate(elem):
 		docxBody.appendChild(docxNewParagraph(dateString, justification = 'right'))
 		rfcDate = dateString
 	
+def parseEref(elem):
+	if elem.nodeValue != None:
+		print('Eref nodeValue: ' , elem.nodeValue)
+	if elem.hasAttribute('target'):
+		return '[' + elem.getAttribute('target') + ']'
+	if elem.nodeType == Node.TEXT_NODE:
+		print('Eref node is TEXT_NODE')
+	# Only target attribute, so, quite useless to parse attributes
+	for child in elem.childNodes:
+		if child.nodeType == Node.TEXT_NODE:
+			return child.nodeValue
+		if child.nodeName == 't':
+			parseText(child)
+
 def parseFigure(elem):
 	print('!!!!! Cannot parse figure')
 	
@@ -209,7 +233,7 @@ def parseOList(elem):
 			print('!!!! Unexpected List child: ', child.nodeName)
 
 
-def parseSection(elem, headingDepth, headingPrefix):
+def parseSection(elem, headingDepth):
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	sectionTitle = None
@@ -236,13 +260,15 @@ def parseSection(elem, headingDepth, headingPrefix):
 			else:
 				headingSuffix = '.' + str(sectionId)
 			# Should create a docx Child ???
-			parseSection(child, headingDepth + 1, headingPrefix + headingSuffix)
+			parseSection(child, headingDepth + 1)
 		elif child.nodeName == 'abstract':
 			parseAbstract(child)
 		elif child.nodeName == 'area':
 			parseArea(child)
 		elif child.nodeName == 'author':
 			parseAuthor(child)
+		elif child.nodeName == 'boilerplate':
+			parseBoilerPlate(child)
 		elif child.nodeName == 'date':
 			parseDate(child)
 		elif child.nodeName == 'figure':
@@ -261,12 +287,14 @@ def parseSection(elem, headingDepth, headingPrefix):
 			parseTextTable(child)
 		elif child.nodeName == 'title':
 			parseTitle(child)
+		elif child.nodeName == 'toc':
+			print('Skipping the ToC')
 		elif child.nodeName == 'ul':
 				parseUList(child)
 		elif child.nodeName == 'workgroup':
 			parseWorkgroup(child)
 		else:
-			print('!!!!! Unexpected tag: ' + child.tagName)
+			print('!!!!! Unexpected tag in parseSection: ' + child.tagName)
  
 def parseSeriesInfo(elem):
 	seriesInfoString = ''
@@ -297,7 +325,9 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None):
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
-			if text.nodeName == 'list':
+			if text.nodeName == 'eref':
+				textValue = textValue + parseEref(text)
+			elif text.nodeName == 'list':
 				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
 				textValue = ''
 				parseList(text)
@@ -408,8 +438,8 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	docxDocument.appendChild(docxBody)
 
 		
-	parseSection(front, 0, '')
-	parseSection(middle, 0, '')
+	parseSection(front, 0)
+	parseSection(middle, 0)
 	
 	sectPrElem = docxRoot.createElement('w:sectPr')
 	
