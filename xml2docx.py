@@ -255,10 +255,6 @@ def parseSection(elem, headingDepth):
 			continue
 		if child.nodeName == 'section':
 			sectionId = sectionId + 1 
-			if headingDepth == 1:
-				headingSuffix = str(sectionId)
-			else:
-				headingSuffix = '.' + str(sectionId)
 			# Should create a docx Child ???
 			parseSection(child, headingDepth + 1)
 		elif child.nodeName == 'abstract':
