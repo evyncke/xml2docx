@@ -48,7 +48,7 @@ def printTree(front):
 				print("\t\tTEXT: ", child.nodeValue)
 	print("\n----------\n")
 
-def docxNewParagraph(textValue, style = 'Normal', justification = None, numberingID = None, indentationLevel = None):
+def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None):
 	if textValue is None:
 		return None
 	docxP = docxRoot.createElement('w:p')
@@ -70,7 +70,16 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, numberin
 		jc =  docxRoot.createElement('w:jc')
 		jc.setAttribute('w:val', justification) 
 		pPr.appendChild(jc)
-	if numberingID != None and indentationLevel != None:
+	if unnumbered:  # Try to override the default numbering in the style
+		numPr = docxRoot.createElement('w:numPr')
+		ilvl = docxRoot.createElement('w:ilvl ')
+		ilvl.setAttribute('w:val', 0)
+		numPr.appendChild(ilvl)
+		numId = docxRoot.createElement('w:numId')
+		numId.setAttribute('w:val', 0)
+		numPr.appendChild(numId)
+		pPr.appendChild(numPr)
+	elif numberingID != None and indentationLevel != None:
 #				<w:numPr>
 #					<w:ilvl w:val="0"/>
 #					<w:numId w:val="2"/>
@@ -146,7 +155,7 @@ def parseBoilerPlate(elem):
 			continue
 		elif child.nodeName == 'section':
 			print('parseBoilerPlate calling parseSection()')
-			parseSection(child, 0)
+			parseSection(child, 1)
 		else:
 			print('Unexpected tagName in BoilerPlate: ', child.nodeName)
 
@@ -236,6 +245,10 @@ def parseOList(elem):
 def parseSection(elem, headingDepth):
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
+	if elem.hasAttribute('numbered'):
+		unnumbered = (elem.getAttribute('numbered') == 'false')
+	else:
+		unnumbered = None	
 	sectionTitle = None
 	if elem.hasAttribute('title'):
 		sectionTitle = elem.getAttribute('title')
@@ -248,7 +261,7 @@ def parseSection(elem, headingDepth):
 		else:
 			print('??? This section has not title...') 
 	if sectionTitle != None:
-		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading' + str(headingDepth)))
+		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading' + str(headingDepth), unnumbered = unnumbered))
 	sectionId = 0
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
