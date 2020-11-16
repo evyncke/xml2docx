@@ -213,7 +213,7 @@ def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 			parseText(child)
 
 def parseFigure(elem):
-	print('!!!!! Cannot parse figure')
+	print('Skipping a figure')
 	
 def parseKeyword(elem):
 	global rfcKeywords
@@ -228,7 +228,7 @@ def parseKeyword(elem):
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue))
 
-def parseList(elem):
+def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.29
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
@@ -241,7 +241,9 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 	print("start LI ", elem)
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
-		print("\tLI", attrib.name, ' = ' , attrib.value)
+		if attrib.name == 'pn' or  attrib.name == 'anchor' or  attrib.name == 'derivedCounter': 	# Let's ignore this marking as no obvious requirement or support in Office OpenXML
+			continue
+		print("\tLI unexpected attribute: ", attrib.name, ' = ' , attrib.value)
 
 	textValue = ''
 	for text in elem.childNodes:
