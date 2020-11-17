@@ -863,4 +863,35 @@
 			<w:color w:val="4472C4" w:themeColor="accent1"/>
 		</w:rPr>
 	</w:style>
+	<w:style w:type="paragraph" w:styleId="Quote">
+		<w:name w:val="Quote"/>
+		<w:basedOn w:val="Normal"/>
+		<w:next w:val="Normal"/>
+		<w:link w:val="QuoteChar"/>
+		<w:uiPriority w:val="29"/>
+		<w:qFormat/>
+		<w:rsid w:val="004857C2"/>
+		<w:pPr>
+			<w:spacing w:before="200" w:after="160"/>
+			<w:ind w:left="864" w:right="864"/>
+			<w:jc w:val="center"/>
+		</w:pPr>
+		<w:rPr>
+			<w:i/>
+			<w:iCs/>
+			<w:color w:val="404040" w:themeColor="text1" w:themeTint="BF"/>
+		</w:rPr>
+	</w:style>
+	<w:style w:type="character" w:customStyle="1" w:styleId="QuoteChar">
+		<w:name w:val="Quote Char"/>
+		<w:basedOn w:val="DefaultParagraphFont"/>
+		<w:link w:val="Quote"/>
+		<w:uiPriority w:val="29"/>
+		<w:rsid w:val="004857C2"/>
+		<w:rPr>
+			<w:i/>
+			<w:iCs/>
+			<w:color w:val="404040" w:themeColor="text1" w:themeTint="BF"/>
+		</w:rPr>
+	</w:style>
 </w:styles>

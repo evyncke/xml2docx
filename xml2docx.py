@@ -51,6 +51,9 @@ def printTree(front):
 def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None):
 	if textValue is None:
 		return None
+	textValue = ' '.join(textValue.split())
+	if textValue == '':
+		return None
 	docxP = docxRoot.createElement('w:p')
 	
 # First handle the style or justification
@@ -108,7 +111,7 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 	rPr.appendChild(lang)
 	r.appendChild(rPr)
 	t = docxRoot.createElement('w:t')
-	text = docxRoot.createTextNode(' '.join(textValue.split()))
+	text = docxRoot.createTextNode(textValue)
 	t.appendChild(text)
 	r.appendChild(t) 
 	docxP.appendChild(r)
@@ -173,6 +176,10 @@ def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only te
 		else:
 			print('!!!! parseBcp14 unexpected nodeType: ' + child.nodeType)
 	
+def parseBlockQuote(elem): # See also https://tools.ietf.org/html/rfc7991#section-2.10 that is similar to old <list> items
+#	parseListItem(elem, style = 'Quote', numberingID = None, indentationLevel = None)
+	parseText(elem, style = 'Quote', numberingID = None, indentationLevel = None, Verbose = True)
+
 def parseBoilerPlate(elem):
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -253,7 +260,6 @@ def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.2
 			print('!!!! parseList, unexpected child: ', child.nodeName)
 		
 def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentationLevel = None):
-#	print("start LI ", elem)
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
 		if attrib.name == 'pn' or  attrib.name == 'anchor' or  attrib.name == 'derivedCounter': 	# Let's ignore this marking as no obvious requirement or support in Office OpenXML
@@ -270,16 +276,20 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 			elif text.nodeName == 'eref':
 				textValue = textValue + parseXref(text)
 			elif text.nodeName == 'ol':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
 				textValue = ''
 				parseOList(text)
 			elif text.nodeName == 't':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
-				textValue = ''
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text				textValue = ''
 				parseText(text)
 			elif text.nodeName == 'ul':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
-				textValue = ''
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text				textValue = ''
 				parseUList(text)
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
@@ -287,8 +297,9 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 				print('!!!!! parseListItem: Text is ELEMENT_NODE: ', text.nodeName)
 #			else:
 #				print('parseListItem ignoring Text is ELEMENT_NODE: ', text.nodeName)
-	docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))
-#	print("end LI ", textValue)
+	p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+	if p:
+		docxBody.appendChild(p)  # Need to emit the last part of the text
 
 def parseOList(elem):
 	for child in elem.childNodes:
@@ -334,6 +345,8 @@ def parseSection(elem, headingDepth):
 			parseArea(child)
 		elif child.nodeName == 'author':
 			parseAuthor(child)
+		elif child.nodeName == 'blockquote':
+			parseBlockQuote(child)
 		elif child.nodeName == 'boilerplate':
 			parseBoilerPlate(child)
 		elif child.nodeName == 'date':
@@ -379,7 +392,9 @@ def parseSeriesInfo(elem):
 		docxBody.appendChild(docxNewParagraph(seriesInfoString, justification = 'right'))
 
 		
-def parseText(elem, style = None, numberingID = None, indentationLevel = None):
+def parseText(elem, style = None, numberingID = None, indentationLevel = None, Verbose = None):
+	if Verbose:
+		print("parseText start: ", elem)
 	# Mainly for debugging
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
@@ -393,32 +408,46 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None):
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
+			if Verbose:
+				print("parseText adding TEXT_NODE: '", text.nodeValue, "'")
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName == 'bcp14':
 				textValue = textValue + parseBcp14(text)
 			elif text.nodeName == 'eref':
 				textValue = textValue + parseEref(text)
 			elif text.nodeName == 'list':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
 				textValue = ''
 				parseList(text)
 			elif text.nodeName == 'ol':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
 				textValue = ''
 				parseOList(text)
 			elif text.nodeName == 't':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
+				if Verbose:
+					print("parseText found <t>: emitting '", textValue, "'")
 				textValue = ''
-				parseText(text)
+				parseText(text, style = style, numberingID = numberingID, indentationLevel = indentationLevel, Verbose = Verbose)
 			elif text.nodeName == 'ul':
-				docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))  # Need to emit the first part of the text
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
 				textValue = ''
 				parseUList(text)
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
 			elif text.nodeName != '#text':
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
-	docxBody.appendChild(docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel))
+	p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+	if p:
+		docxBody.appendChild(p)  # Need to emit the first part of the text
 
 def parseTextTable(elem):
 	print('!!!!! Cannot parse TextTable')
