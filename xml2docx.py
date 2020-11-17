@@ -50,10 +50,11 @@ def printTree(front):
 				print("\t\tTEXT: ", child.nodeValue)
 	print("\n----------\n")
 
-def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None, removeEmpty = True, language = 'en-US'):
+def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None, removeEmpty = True, language = 'en-US', cdataSection = None):
 	if textValue is None:
 		return None
-	textValue = ' '.join(textValue.split())
+	if cdataSection == None:  # remove extra spaces only if CDATA is not requested
+		textValue = ' '.join(textValue.split())
 	if textValue == '' and removeEmpty:
 		return None
 	docxP = docxRoot.createElement('w:p')
@@ -118,7 +119,10 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 		rPr.appendChild(rStyle)
 	r.appendChild(rPr)
 	t = docxRoot.createElement('w:t')
-	text = docxRoot.createTextNode(textValue)
+	if cdataSection == None:
+		text = docxRoot.createTextNode(textValue)
+	else:
+		text = docxRoot.createCDATASection(textValue)
 	t.appendChild(text)
 	r.appendChild(t) 
 	docxP.appendChild(r)
@@ -153,7 +157,7 @@ def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2
 			figureLines += text
 		# Let's split this string into lines and print each line
 		for line in figureLines.splitlines():
-			docxBody.appendChild(docxNewParagraph(line, style = 'HTMLCode', removeEmpty = False, language = None))
+			docxBody.appendChild(docxNewParagraph(line, style = 'HTMLCode', removeEmpty = False, language = None, cdataSection = True))
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 	global rfcAuthors
@@ -255,7 +259,7 @@ def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 	# Figure had preamble (deprecated but let's process it)
 	preambleChildren = elem.getElementsByTagName('preamble')
-	if preambleChildren.length > 0:
+	if preambleChildren.length > 0 and preambleChildren[0].childNodes.length > 0:
 		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
 			preamble = preambleChildren[0].childNodes[0].nodeValue
 			docxBody.appendChild(docxNewParagraph(preamble))
@@ -280,7 +284,7 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 		docxBody.appendChild(docxNewParagraph('Figure: ' + figureTitle, justification = 'center'))
 	# Figure had postamble (deprecated but let's process it)
 	postambleChildren = elem.getElementsByTagName('postamble')
-	if postambleChildren.length > 0:
+	if postambleChildren.length > 0  and postambleChildren[0].childNodes.length > 0:
 		if postambleChildren[0].nodeType == Node.ELEMENT_NODE:
 			postamble = postambleChildren[0].childNodes[0].nodeValue
 			docxBody.appendChild(docxNewParagraph(postamble))
