@@ -122,6 +122,7 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 	if cdataSection == None:
 		text = docxRoot.createTextNode(textValue)
 	else:
+		t.setAttribute('xml:space', 'preserve')
 		text = docxRoot.createCDATASection(textValue)
 	t.appendChild(text)
 	r.appendChild(t) 
@@ -157,7 +158,7 @@ def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2
 			figureLines += text
 		# Let's split this string into lines and print each line
 		for line in figureLines.splitlines():
-			docxBody.appendChild(docxNewParagraph(line, style = 'HTMLCode', removeEmpty = False, language = None, cdataSection = True))
+			docxBody.appendChild(docxNewParagraph(line.rstrip(" \t"), style = 'HTMLCode', removeEmpty = False, language = None, cdataSection = True))
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 	global rfcAuthors
@@ -307,9 +308,9 @@ def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.2
 		if child.nodeType == Node.COMMENT_NODE:
 			continue
 		elif child.nodeType == Node.TEXT_NODE: # Unexpected, let's hope it is empty space
-			if child.nodeValue.strip(" \r\n") == '':
+			if child.nodeValue.strip(" \t\r\n") == '':
 				continue
-			print("!!!! parseList non empty text = " + child.nodeValue.strip(" \r\n"))
+			print("!!!! parseList non empty text = '" + child.nodeValue.strip(" \t\r\n") + "'")
 			continue
 		elif child.nodeType != Node.ELEMENT_NODE:
 			print('!!!! parseList, unexpected child node type: ', child)
@@ -425,7 +426,7 @@ def parseSection(elem, headingDepth):
 			parseText(child, style = None)
 		elif child.nodeName == 'seriesInfo':
 			parseSeriesInfo(child)
-		elif child.nodeName == 'textable':
+		elif child.nodeName == 'texttable':
 			parseTextTable(child)
 		elif child.nodeName == 'title':
 			parseTitle(child)
@@ -452,19 +453,22 @@ def parseSeriesInfo(elem):
 		docxBody.appendChild(docxNewParagraph(seriesInfoString, justification = 'right'))
 
 		
-def parseText(elem, style = None, numberingID = None, indentationLevel = None, Verbose = None):
+def parseText(elem, style = None, numberingID = None, indentationLevel = None, Verbose = None):  # See https://tools.ietf.org/html/rfc7991#section-2.53
 	if Verbose:
 		print("parseText start: ", elem)
+	textValue = ''
 	# Mainly for debugging
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
+		if attrib.name == 'hangText':
+			textValue = attrib.value
+			continue
 		if attrib.name == 'pn': 	# Let's ignore this marking as no obvious requirement or support in Office OpenXML
 			continue
 		if attrib.name == 'indent':	# TODO later if really required
 			continue
 		print("\tparseText unexpected attribute: ", attrib.name, ' = ' , attrib.value)
 
-	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
@@ -475,6 +479,12 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 				textValue = textValue + parseBcp14(text)
 			elif text.nodeName == 'eref':
 				textValue = textValue + parseEref(text)
+			elif text.nodeName == 'figure':
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
+				textValue = ''
+				parseFigure(text)
 			elif text.nodeName == 'list':
 				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				if p:
@@ -510,7 +520,8 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 		docxBody.appendChild(p)  # Need to emit the first part of the text
 
 def parseTextTable(elem):
-	print('!!!!! Cannot parse TextTable')
+	print('Skipping TextTable')
+	docxBody.appendChild(docxNewParagraph('... a TextTable was not imported...', justification = 'center'))
 	
 def parseTitle(elem):
 	global rfcTitle
