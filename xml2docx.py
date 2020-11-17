@@ -143,8 +143,10 @@ def parseArea(elem):
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue))
 
-def parseArtWork(elem):
-	if elem.hasAttribute('type') and elem.getAttribute('type') == 'ascii-art':
+def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
+	# If there is no type attribute, let's process the element
+	# If there is a type attribute, let's process the element only if type == ascii-art
+	if (not elem.hasAttribute('type')) or (elem.hasAttribute('type') and elem.getAttribute('type') == 'ascii-art'):
 		figureLines = ''
 		for chunk in elem.childNodes:	
 			text = chunk.nodeValue
@@ -256,6 +258,7 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 	if preambleChildren.length > 0:
 		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
 			preamble = preambleChildren[0].childNodes[0].nodeValue
+			docxBody.appendChild(docxNewParagraph(preamble))
 	# Let's process a single artwork
 	artworkChildren = elem.getElementsByTagName('artwork')
 	for child in artworkChildren:
@@ -276,10 +279,11 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 	if figureTitle != None:
 		docxBody.appendChild(docxNewParagraph('Figure: ' + figureTitle, justification = 'center'))
 	# Figure had postamble (deprecated but let's process it)
-	preambleChildren = elem.getElementsByTagName('preamble')
-	if preambleChildren.length > 0:
-		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
-			preamble = preambleChildren[0].childNodes[0].nodeValue
+	postambleChildren = elem.getElementsByTagName('postamble')
+	if postambleChildren.length > 0:
+		if postambleChildren[0].nodeType == Node.ELEMENT_NODE:
+			postamble = postambleChildren[0].childNodes[0].nodeValue
+			docxBody.appendChild(docxNewParagraph(postamble))
 	
 def parseKeyword(elem):
 	global rfcKeywords
