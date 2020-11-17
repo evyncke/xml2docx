@@ -300,7 +300,14 @@ def parseKeyword(elem):
 
 def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.29
 	for child in elem.childNodes:
-		if child.nodeType != Node.ELEMENT_NODE:
+		if child.nodeType == Node.COMMENT_NODE:
+			continue
+		elif child.nodeType == Node.TEXT_NODE: # Unexpected, let's hope it is empty space
+			if child.nodeValue.strip(" \r\n") == '':
+				continue
+			print("!!!! parseList non empty text = " + child.nodeValue.strip(" \r\n"))
+			continue
+		elif child.nodeType != Node.ELEMENT_NODE:
 			print('!!!! parseList, unexpected child node type: ', child)
 			continue
 		if child.nodeName == 't':
