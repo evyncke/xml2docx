@@ -894,4 +894,16 @@
 			<w:color w:val="404040" w:themeColor="text1" w:themeTint="BF"/>
 		</w:rPr>
 	</w:style>
+	<w:style w:type="character" w:styleId="HTMLCode">
+		<w:name w:val="HTML Code"/>
+		<w:basedOn w:val="DefaultParagraphFont"/>
+		<w:uiPriority w:val="99"/>
+		<w:unhideWhenUsed/>
+		<w:rsid w:val="00A4380B"/>
+		<w:rPr>
+			<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>
+			<w:sz w:val="20"/>
+			<w:szCs w:val="20"/>
+		</w:rPr>
+	</w:style>
 </w:styles>

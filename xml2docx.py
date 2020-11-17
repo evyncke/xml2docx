@@ -33,6 +33,8 @@ rfcKeywords = []
 def printTree(front):
 	print('All children:')
 	for elem in front.childNodes:
+		if elem.nodeType == Node.TEXT_NODE:
+			print("\t TEXT: '", elem.nodeValue, "'")
 		if elem.nodeType != Node.ELEMENT_NODE:
 			continue
 		print("\t", elem.nodeName)
@@ -48,11 +50,11 @@ def printTree(front):
 				print("\t\tTEXT: ", child.nodeValue)
 	print("\n----------\n")
 
-def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None):
+def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None, removeEmpty = True, language = 'en-US'):
 	if textValue is None:
 		return None
 	textValue = ' '.join(textValue.split())
-	if textValue == '':
+	if textValue == '' and removeEmpty:
 		return None
 	docxP = docxRoot.createElement('w:p')
 	
@@ -106,9 +108,14 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 #	</w:r>
 	r = docxRoot.createElement('w:r')
 	rPr = docxRoot.createElement('w:rPr')
-	lang = 	docxRoot.createElement('w:lang')
-	lang.setAttribute('w:val', 'en-US')
-	rPr.appendChild(lang)
+	if language != None:
+		lang = 	docxRoot.createElement('w:lang')
+		lang.setAttribute('w:val', language)
+		rPr.appendChild(lang)
+	elif style != None:  # Seems mandatory for figure ASCII art to repeat the style per run
+		rStyle = 	docxRoot.createElement('w:rStyle')
+		rStyle.setAttribute('w:val', style)
+		rPr.appendChild(rStyle)
 	r.appendChild(rPr)
 	t = docxRoot.createElement('w:t')
 	text = docxRoot.createTextNode(textValue)
@@ -135,6 +142,16 @@ def parseArea(elem):
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
 	docxBody.appendChild(docxNewParagraph(textValue))
+
+def parseArtWork(elem):
+	if elem.hasAttribute('type') and elem.getAttribute('type') == 'ascii-art':
+		figureLines = ''
+		for chunk in elem.childNodes:	
+			text = chunk.nodeValue
+			figureLines += text
+		# Let's split this string into lines and print each line
+		for line in figureLines.splitlines():
+			docxBody.appendChild(docxNewParagraph(line, style = 'HTMLCode', removeEmpty = False, language = None))
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 	global rfcAuthors
@@ -178,7 +195,7 @@ def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only te
 	
 def parseBlockQuote(elem): # See also https://tools.ietf.org/html/rfc7991#section-2.10 that is similar to old <list> items
 #	parseListItem(elem, style = 'Quote', numberingID = None, indentationLevel = None)
-	parseText(elem, style = 'Quote', numberingID = None, indentationLevel = None, Verbose = True)
+	parseText(elem, style = 'Quote', numberingID = None, indentationLevel = None)
 
 def parseBoilerPlate(elem):
 	for child in elem.childNodes:
@@ -233,8 +250,36 @@ def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 			print("parseEref recurse into t !!!")
 			parseText(child)
 
-def parseFigure(elem):
-	print('Skipping a figure')
+def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
+	# Figure had preamble (deprecated but let's process it)
+	preambleChildren = elem.getElementsByTagName('preamble')
+	if preambleChildren.length > 0:
+		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
+			preamble = preambleChildren[0].childNodes[0].nodeValue
+	# Let's process a single artwork
+	artworkChildren = elem.getElementsByTagName('artwork')
+	for child in artworkChildren:
+		parseArtWork(child)
+	# Let's process the source code
+	
+	# Could have a title attribute rather than the name element (same as in section)
+	if elem.nodeType != Node.ELEMENT_NODE:
+		return
+	figureTitle = None
+	if elem.hasAttribute('title'):
+		figureTitle = elem.getAttribute('title')
+	else:
+		nameChild = elem.getElementsByTagName('name')
+		if nameChild.length > 0:
+			if nameChild[0].nodeType == Node.ELEMENT_NODE:
+				figureTitle = nameChild[0].childNodes[0].nodeValue
+	if figureTitle != None:
+		docxBody.appendChild(docxNewParagraph('Figure: ' + figureTitle, justification = 'center'))
+	# Figure had postamble (deprecated but let's process it)
+	preambleChildren = elem.getElementsByTagName('preamble')
+	if preambleChildren.length > 0:
+		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
+			preamble = preambleChildren[0].childNodes[0].nodeValue
 	
 def parseKeyword(elem):
 	global rfcKeywords
@@ -324,7 +369,7 @@ def parseSection(elem, headingDepth):
 	elif elem.nodeName == 'section': # Can be the case for <front> <middle> .... that are also processed by this part
 		# Look after a child node of tag "name"
 		nameChild = elem.getElementsByTagName('name')
-		if nameChild != None:
+		if nameChild.length > 0:
 			if nameChild[0].nodeType == Node.ELEMENT_NODE:
 				sectionTitle = nameChild[0].childNodes[0].nodeValue
 		else:
