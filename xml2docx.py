@@ -123,7 +123,8 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 		text = docxRoot.createTextNode(textValue)
 	else:
 		t.setAttribute('xml:space', 'preserve')
-		text = docxRoot.createCDATASection(textValue)
+		text = docxRoot.createTextNode(textValue)
+#		text = docxRoot.createCDATASection(textValue)   # xml:space is enough to keep leading spaces, CDATA adds 4 tabs after in the pretty printing :-(
 	t.appendChild(text)
 	r.appendChild(t) 
 	docxP.appendChild(r)
@@ -158,6 +159,8 @@ def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2
 			figureLines += text
 		# Let's split this string into lines and print each line
 		for line in figureLines.splitlines():
+			print("line=         '"+line+"'")
+			print("line.rstrip()='"+line.rstrip()+"'")
 			docxBody.appendChild(docxNewParagraph(line.rstrip(" \t"), style = 'HTMLCode', removeEmpty = False, language = None, cdataSection = True))
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
