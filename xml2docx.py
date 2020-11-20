@@ -159,8 +159,6 @@ def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2
 			figureLines += text
 		# Let's split this string into lines and print each line
 		for line in figureLines.splitlines():
-			print("line=         '"+line+"'")
-			print("line.rstrip()='"+line.rstrip()+"'")
 			docxBody.appendChild(docxNewParagraph(line.rstrip(" \t"), style = 'HTMLCode', removeEmpty = False, language = None, cdataSection = True))
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
