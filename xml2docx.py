@@ -15,6 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
    
+# A lot of information in http://officeopenxml.com/anatomyofOOXML.php
    
 from xml.dom import minidom, Node
 import xml.dom
@@ -152,7 +153,7 @@ def parseArea(elem):
 def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
 	# If there is no type attribute, let's process the element
 	# If there is a type attribute, let's process the element only if type == ascii-art
-	if (not elem.hasAttribute('type')) or (elem.hasAttribute('type') and elem.getAttribute('type') == 'ascii-art'):
+	if (not elem.hasAttribute('type')) or (elem.hasAttribute('type') and (elem.getAttribute('type') == 'ascii-art' or elem.getAttribute('type') == '')):
 		figureLines = ''
 		for chunk in elem.childNodes:	
 			text = chunk.nodeValue
@@ -243,6 +244,7 @@ def parseDList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.
 		else:
 			print('!!!! parseDList, unexpected child: ', child.nodeName)
 
+# TODO switch off language to avoid wrong typos ?
 def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 	if elem.nodeValue != None:
 		print('Eref nodeValue: ' , elem.nodeValue)
@@ -363,6 +365,7 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 	if p:
 		docxBody.appendChild(p)  # Need to emit the last part of the text
 
+# TODO should reset the numbering to 1... cfr draft-ietf-anima-autonomic-control-plane-29.xml
 def parseOList(elem):
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -440,14 +443,15 @@ def parseSection(elem, headingDepth):
 		else:
 			print('!!!!! Unexpected tag in parseSection: ' + child.tagName)
  
+# TODO handle wrongly formatted    <seriesInfo name="Internet-Draft" value="draft-ietf-anima-autonomic-control-plane-29"/>
 def parseSeriesInfo(elem):
 	seriesInfoString = ''
 	if elem.hasAttribute('name'):
-		seriesInfoString = elem.getAttribute('name')
+		seriesInfoString = elem.getAttribute('name') + ' '
 	if elem.hasAttribute('value'):
-		seriesInfoString = seriesInfoString+ elem.getAttribute('value') + ' '
+		seriesInfoString = seriesInfoString + elem.getAttribute('value') + ' '
 	else:
-		seriesInfoString = seriesInfoString + ' '
+		seriesInfoString = seriesInfoString
 	if elem.hasAttribute('stream'):
 		seriesInfoString = seriesInfoString + ' (stream: ' + elem.getAttribute('stream') + ')'
 	if seriesInfoString != '':
