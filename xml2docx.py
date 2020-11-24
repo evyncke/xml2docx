@@ -510,6 +510,15 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 					print("parseText found <t>: emitting '", textValue, "'")
 				textValue = ''
 				parseText(text, style = style, numberingID = numberingID, indentationLevel = indentationLevel, Verbose = Verbose)
+			elif text.nodeName == 'vspace':
+				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
+				if p:
+					docxBody.appendChild(p)  # Need to emit the first part of the text
+				# Now force an empty paragraph
+				p = docxNewParagraph('', style = style, removeEmpty = False)
+				if p:
+					docxBody.appendChild(p)  
+				textValue = ''
 			elif text.nodeName == 'ul':
 				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				if p:
