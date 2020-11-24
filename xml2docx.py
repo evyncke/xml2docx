@@ -375,6 +375,18 @@ def parseOList(elem):
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 
+def parseRfc(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.45 
+	if elem.nodeType != Node.ELEMENT_NODE:
+		return
+	rfcInfo = ''
+	if elem.hasAttribute('category'):
+		docxBody.appendChild(docxNewParagraph('Category: ' + elem.getAttribute('category')))
+	if elem.hasAttribute('submissionType'):
+		docxBody.appendChild(docxNewParagraph('Submission type: ' + elem.getAttribute('submissionType')))
+	if elem.hasAttribute('obsoletes'):
+		docxBody.appendChild(docxNewParagraph('Obsoletes: ' + elem.getAttribute('obsoletes')))
+	if elem.hasAttribute('updates'):
+		docxBody.appendChild(docxNewParagraph('Updates: ' + elem.getAttribute('updates')))
 
 def parseSection(elem, headingDepth):
 	if elem.nodeType != Node.ELEMENT_NODE:
@@ -585,11 +597,11 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	global docxRoot, docxBody, docxDocument
 		
 	xmldoc = minidom.parse(inFilename)
-	rfc = xmldoc.getElementsByTagName('rfc')
+	rfc = xmldoc.getElementsByTagName('rfc')[0]
 
-	front = xmldoc.getElementsByTagName('front')[0]
-	middle = xmldoc.getElementsByTagName('middle')[0]
-	back = xmldoc.getElementsByTagName('back')[0]
+	front = rfc.getElementsByTagName('front')[0]
+	middle = rfc.getElementsByTagName('middle')[0]
+	back = rfc.getElementsByTagName('back')[0]
 
 	domImplementation = xml.dom.getDOMImplementation()
 	docxRoot = domImplementation.createDocument(None, None, None)
@@ -633,7 +645,7 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	docxBody = docxRoot.createElement('w:body')
 	docxDocument.appendChild(docxBody)
 
-		
+	parseRfc(rfc)
 	parseSection(front, 0)
 	parseSection(middle, 0)
 	
