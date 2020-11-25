@@ -191,6 +191,23 @@ def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 			docxBody.appendChild(docxNewParagraph(author + organization, justification = 'right'))
 			rfcAuthors.append(author + organization)
 
+def parseBack(elem): # https://tools.ietf.org/html/rfc7991#section-2.8
+	if elem.nodeType != Node.ELEMENT_NODE:
+		return
+	# Let's hope that the children are in the right order... i.e., starting with the references
+	docxBody.appendChild(docxNewParagraph('References', style = 'Heading1'))
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		if child.nodeName == 'displayreference':
+			parseDisplayReference(child)
+		elif child.nodeName == 'references':
+			parseReferences(child)
+		elif child.nodeName == 'section':
+			parseSection(child, 2)
+		else:
+			print('!!!! parseBack: unexpected nodeName: ' + child.nodeName)
+
 def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only text
 	if elem.nodeValue != None:
 		print('Bcp14 nodeValue: ' , elem.nodeValue)
@@ -203,7 +220,6 @@ def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only te
 			print('!!!! parseBcp14 unexpected nodeType: ' + child.nodeType)
 	
 def parseBlockQuote(elem): # See also https://tools.ietf.org/html/rfc7991#section-2.10 that is similar to old <list> items
-#	parseListItem(elem, style = 'Quote', numberingID = None, indentationLevel = None)
 	parseText(elem, style = 'Quote', numberingID = None, indentationLevel = None)
 
 def parseBoilerPlate(elem):
@@ -374,6 +390,45 @@ def parseOList(elem):
 			parseListItem(child, numberingID = '1', indentationLevel = '0')  # numID = 1 is defined in numbering.xml as enumeration list
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
+
+def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.40
+	if elem.nodeType != Node.ELEMENT_NODE:
+		return
+	if elem.hasAttribute('anchor'):
+		anchor = '[' + elem.getAttribute('anchor') + ']'
+	else:
+		print('!!!! parseReference, missing anchor attribute')
+		anchor = ''
+	p = docxNewParagraph(anchor)
+	if p:
+		docxBody.appendChild(p)  # Need to emit the last part of the text
+
+def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
+	if elem.nodeType != Node.ELEMENT_NODE:
+		return
+	sectionTitle = None
+	if elem.hasAttribute('title'):
+		sectionTitle = elem.getAttribute('title')
+	else:
+		nameChild = elem.getElementsByTagName('name')
+		if nameChild.length > 0:
+			if nameChild[0].nodeType == Node.ELEMENT_NODE:
+				sectionTitle = nameChild[0].childNodes[0].nodeValue
+		else:
+			print(elem)
+			print('??? parseReferences: this references section has not title...') 
+	if sectionTitle != None:
+		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading2', unnumbered = None))
+	for child in elem.childNodes:
+		if child.nodeType == Node.TEXT_NODE:  # Let's skip whitespace (assuming it is white space...)
+			continue
+		if child.nodeType != Node.ELEMENT_NODE:
+			print(child)
+			continue
+		if child.nodeName == 'reference':
+			parseReference(child)
+		else:
+			print('!!!! parseReferences: unexpected nodeName: ' + child.nodeName)
 
 def parseRfc(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.45 
 	if elem.nodeType != Node.ELEMENT_NODE:
@@ -648,6 +703,7 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	parseRfc(rfc)
 	parseSection(front, 0)
 	parseSection(middle, 0)
+	parseBack(back)
 	
 	sectPrElem = docxRoot.createElement('w:sectPr')
 	
