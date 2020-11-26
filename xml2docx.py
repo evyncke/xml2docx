@@ -24,6 +24,7 @@ import sys, getopt
 import io, os
 import zipfile
 import tempfile, datetime
+import urllib.request
 
 # Same states to be kept
 rfcDate = None
@@ -131,6 +132,37 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 	docxP.appendChild(r)
 	return docxP
 
+libsTable = { 'RFC': 'http://www.rfc-editor.org/refs/bibxml/',
+	'I-D': 'http://xml2rfc.ietf.org/public/rfc/bibxml3/',
+	'BCP': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
+	'FYI': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
+	'STD': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
+	'W3C': 'http://xml2rfc.ietf.org/public/rfc/bibxml4/',
+	'SDO-3GPP': 'http://xml2rfc.ietf.org/public/rfc/bibxml5/',
+	'IEEE': 'http://xml2rfc.ietf.org/public/rfc/bibxml6/'
+}
+
+def includeExternal(referenceName):
+	global libsTable
+	
+	referenceTokens = referenceName.split('.')
+	if libsTable.get(referenceTokens[1]):
+		libURL = libsTable.get(referenceTokens[1])
+		print("Importing " + referenceName + " from " + libURL)
+		try:
+			response = urllib.request.urlopen(libURL + referenceName + '.xml')
+			importedString = response.read()
+			importedXML = minidom.parseString(importedString)
+		except urllib.error.HTTPError as err:
+			print("Cannot import XML from " +  libURL + referenceName + ".xml, error: ", err)
+			return None
+		except:
+			print('Not found or invalid XML in ' + libURL)
+			return None
+		return importedXML.getElementsByTagName('reference')[0]
+	print("Reference type " + referenceTokens[1] + " not supported...")
+	return None
+	
 def parseAbstract(elem):
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -395,13 +427,30 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	if elem.hasAttribute('anchor'):
-		anchor = '[' + elem.getAttribute('anchor') + ']'
+		text = '[' + elem.getAttribute('anchor') + ']  '
 	else:
 		print('!!!! parseReference, missing anchor attribute')
-		anchor = ''
-	p = docxNewParagraph(anchor)
+		text = ''
+	frontElem = elem.getElementsByTagName('front')[0]
+	if frontElem:
+		for author in frontElem.getElementsByTagName('author'):
+			authorName = '?' # Could also simply be in the child elemn <organization>
+			if author.hasAttribute('fullname'):
+				authorName = author.getAttribute('fullname')
+			elif author.hasAttribute('surname'):
+				if author.hasAttribute('initials'):
+					authorName = ' ' + author.getAttribute('surname') + ' ' + author.getAttribute('initials')
+				else:
+					authorName = author.getAttribute('surname')
+			text += authorName + ', '
+		if frontElem.getElementsByTagName('title'):
+			titleElem = frontElem.getElementsByTagName('title')[0]
+			for child in titleElem.childNodes:
+				if child.nodeType == Node.TEXT_NODE:
+					text += '"' + child.nodeValue + '", '
+	p = docxNewParagraph(text)
 	if p:
-		docxBody.appendChild(p)  # Need to emit the last part of the text
+		docxBody.appendChild(p)
 
 def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 	if elem.nodeType != Node.ELEMENT_NODE:
@@ -420,10 +469,18 @@ def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 	if sectionTitle != None:
 		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading2', unnumbered = None))
 	for child in elem.childNodes:
+		if child.nodeType == Node.PROCESSING_INSTRUCTION_NODE: # in this location it is probably <?rfc include='reference.RFC.2119'?> or <?rfc include='reference.I-D.ietf-emu-eaptlscert'?> 
+			if child.target == 'rfc' and child.data[0:9] == "include='":
+				includeName = child.data[9:-1]
+				child = includeExternal(includeName)
+				if child is None:
+					continue
+			else:
+				print("parseReferences: skipping unknown processing instruction: target = " + child.target + ", data = " + child.data[0:9]) 
 		if child.nodeType == Node.TEXT_NODE:  # Let's skip whitespace (assuming it is white space...)
 			continue
 		if child.nodeType != Node.ELEMENT_NODE:
-			print(child)
+			print('!!!! parseReferences: unexpected nodeType: ', child)
 			continue
 		if child.nodeName == 'reference':
 			parseReference(child)
