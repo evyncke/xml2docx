@@ -148,7 +148,7 @@ def includeExternal(referenceName):
 	referenceTokens = referenceName.split('.')
 	if libsTable.get(referenceTokens[1]):
 		libURL = libsTable.get(referenceTokens[1])
-		print("Importing " + referenceName + " from " + libURL)
+		print("Importing " + referenceName + " from " + libURL + referenceName + '.xml')
 		try:
 			response = urllib.request.urlopen(libURL + referenceName + '.xml')
 			importedString = response.read()
@@ -431,23 +431,57 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 	else:
 		print('!!!! parseReference, missing anchor attribute')
 		text = ''
+	seriesInfoText = ''
+	for serieInfo in elem.getElementsByTagName('seriesInfo'):
+		if serieInfo.hasAttribute('name') and serieInfo.hasAttribute('value'):
+			if serieInfo.getAttribute('value') == '': # Sometimes the value field is empty... no need to add a useless space
+				seriesInfoText += serieInfo.getAttribute('name') + ' ' + serieInfo.getAttribute('value') + ', '
+			else:
+				seriesInfoText += serieInfo.getAttribute('name') + ', '
+		else:
+			print("!!!! parseReference, no name/value attribute in seriesInfo for " + text)
 	frontElem = elem.getElementsByTagName('front')[0]
 	if frontElem:
 		for author in frontElem.getElementsByTagName('author'):
 			authorName = '?' # Could also simply be in the child elemn <organization>
-			if author.hasAttribute('fullname'):
-				authorName = author.getAttribute('fullname')
-			elif author.hasAttribute('surname'):
+			if author.hasAttribute('surname'):
 				if author.hasAttribute('initials'):
-					authorName = ' ' + author.getAttribute('surname') + ' ' + author.getAttribute('initials')
+					authorName = author.getAttribute('surname') + ', ' + author.getAttribute('initials')
 				else:
 					authorName = author.getAttribute('surname')
+			elif author.hasAttribute('fullname'):
+				authorName = author.getAttribute('fullname')
+			else:   # Let's find the <organization> element
+				orgElem = frontElem.getElementsByTagName('organization')[0]
+				if orgElem:
+					authorName = ''
+					for child in orgElem.childNodes:
+						if child.nodeType == Node.TEXT_NODE:
+							authorName += child.nodeValue
 			text += authorName + ', '
 		if frontElem.getElementsByTagName('title'):
 			titleElem = frontElem.getElementsByTagName('title')[0]
 			for child in titleElem.childNodes:
 				if child.nodeType == Node.TEXT_NODE:
 					text += '"' + child.nodeValue + '", '
+		# Insert seriesInfo if any
+		text += seriesInfoText
+		if frontElem.getElementsByTagName('date'):
+			dateElem = frontElem.getElementsByTagName('date')[0]
+			if dateElem.hasAttribute('year'):
+				if dateElem.hasAttribute('month'):
+					text += dateElem.getAttribute('month') + ' ' + dateElem.getAttribute('year') + ', '
+				else:
+					text += dateElem.getAttribute('year') + ', '
+	else: # In the absence of <front> element
+		text += seriesInfoText
+
+	if elem.hasAttribute('target'):
+		text += elem.getAttribute('target')
+	# Let's remove any trailing comma
+	if text[-2:] == ', ':
+		text = text[:-2]
+	text += '.'
 	p = docxNewParagraph(text)
 	if p:
 		docxBody.appendChild(p)
