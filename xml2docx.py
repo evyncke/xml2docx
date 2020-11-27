@@ -16,6 +16,15 @@
 #   limitations under the License.
    
 # A lot of information in http://officeopenxml.com/anatomyofOOXML.php
+
+# TODO
+# Handle external entities used notably for references...
+# https://www.w3schools.com/xml/xml_dtd_entities.asp
+#  example 
+#    <?xml version='1.0'?>
+#        <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' [
+#        <!ENTITY rfc2629 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2629.xml'>
+#       ]>
    
 from xml.dom import minidom, Node
 import xml.dom
