@@ -952,7 +952,10 @@ if __name__ == '__main__':
 		else:
 			outFilename = 'xml2docx.xml'
 	if docxFilename == None:
+		if inFilename[-4:] == '.xml':
 			docxFilename = inFilename.replace('.xml', '.docx')
+		else:
+			docxFilename = inFilename + '.docx'
 			
 	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)
