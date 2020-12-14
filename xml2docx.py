@@ -750,8 +750,19 @@ def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	global xmldoc
 	global docxRoot, docxBody, docxDocument
+	
+	if os.path.isfile(inFilename):
+		xmldoc = minidom.parse(inFilename)
+	else:
+		try:
+			response = urllib.request.urlopen('https://tools.ietf.org/id/' + inFilename + '.xml')
+		except:
+			print("Cannot fetch the XML document from the IETF site...")
+			sys.exit(1)
+		draftString = response.read()
+		xmldoc = minidom.parseString(draftString)
+		print("Fetching the draft from the IETF site...")
 		
-	xmldoc = minidom.parse(inFilename)
 	rfc = xmldoc.getElementsByTagName('rfc')[0]
 
 	front = rfc.getElementsByTagName('front')[0]
@@ -920,7 +931,7 @@ if __name__ == '__main__':
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print('xml2docx.py -i <inputfile> [-o <outputfile>] [--docx <result.docx>]')
+			print('xml2docx.py -i <inputfile/draft-name> [-o <outputfile>] [--docx <result.docx>]')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inFilename = arg
@@ -941,8 +952,8 @@ if __name__ == '__main__':
 		else:
 			outFilename = 'xml2docx.xml'
 	if docxFilename == None:
-		docxFilename = inFilename.replace('.xml', '.docx')
-
+			docxFilename = inFilename.replace('.xml', '.docx')
+			
 	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)
 
