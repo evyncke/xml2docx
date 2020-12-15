@@ -141,14 +141,16 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 	docxP.appendChild(r)
 	return docxP
 
-libsTable = { 'RFC': 'http://www.rfc-editor.org/refs/bibxml/',
+libsTable = { 
+	'RFC': 'http://www.rfc-editor.org/refs/bibxml/',
 	'I-D': 'http://xml2rfc.ietf.org/public/rfc/bibxml3/',
+	'W3C': 'http://xml2rfc.ietf.org/public/rfc/bibxml4/',
+	'SDO-3GPP': 'http://xml2rfc.ietf.org/public/rfc/bibxml5/',
+	'IEEE': 'http://xml2rfc.ietf.org/public/rfc/bibxml6/',
+	'DOI': 'http://xml2rfc.ietf.org/public/rfc/bibxml7/',
 	'BCP': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
 	'FYI': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
 	'STD': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
-	'W3C': 'http://xml2rfc.ietf.org/public/rfc/bibxml4/',
-	'SDO-3GPP': 'http://xml2rfc.ietf.org/public/rfc/bibxml5/',
-	'IEEE': 'http://xml2rfc.ietf.org/public/rfc/bibxml6/'
 }
 
 def includeExternal(referenceName):
@@ -286,6 +288,11 @@ def parseDate(elem):
 		docxBody.appendChild(docxNewParagraph(dateString, justification = 'right'))
 		rfcDate = dateString
 	
+def parseDisplayReference(elem): # https://tools.ietf.org/html/rfc7991#section-2.19
+	# Presentation only... skipping it for now
+	return
+#	print("parseDisplayReference not yet implemented")
+	
 def parseDList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.20 
 	for child in elem.childNodes:
 	# If should be a serie of DT DD elements in the right order, the code is not resilient to out of order
@@ -422,6 +429,9 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 	if p:
 		docxBody.appendChild(p)  # Need to emit the last part of the text
 
+def parseNote(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.33
+	print("<note> is an unsupported tag")
+	
 # TODO should reset the numbering to 1... cfr draft-ietf-anima-autonomic-control-plane-29.xml
 def parseOList(elem):
 	for child in elem.childNodes:
@@ -513,7 +523,7 @@ def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading2', unnumbered = None))
 	for child in elem.childNodes:
 		if child.nodeType == Node.PROCESSING_INSTRUCTION_NODE: # in this location it is probably <?rfc include='reference.RFC.2119'?> or <?rfc include='reference.I-D.ietf-emu-eaptlscert'?> 
-			if child.target == 'rfc' and child.data[0:9] == "include='":
+			if child.target == 'rfc' and (child.data[0:9] == "include='" or child.data[0:9] == 'include="'):
 				includeName = child.data[9:-1]
 				child = includeExternal(includeName)
 				if child is None:
@@ -575,6 +585,8 @@ def parseSection(elem, headingDepth):
 			parseAbstract(child)
 		elif child.nodeName == 'area':
 			parseArea(child)
+		elif child.nodeName == 'artwork':
+			parseArtWork(child)
 		elif child.nodeName == 'author':
 			parseAuthor(child)
 		elif child.nodeName == 'blockquote':
@@ -591,6 +603,8 @@ def parseSection(elem, headingDepth):
 			parseKeyword(child)
 		elif child.nodeName == 'name': # Already processed
 			continue
+		elif child.nodeName == 'note':
+				parseNote(child)
 		elif child.nodeName == 'ol':
 				parseOList(child)
 		elif child.nodeName == 't':
@@ -639,7 +653,9 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 			continue
 		if attrib.name == 'indent':	# TODO later if really required
 			continue
-		print("\tparseText unexpected attribute: ", attrib.name, ' = ' , attrib.value)
+		if attrib.name == 'keepWithNext':	# TODO later if really required
+			continue
+		print("\tparseText unexpected attribute: ", attrib.name, '=' , attrib.value)
 
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
@@ -694,7 +710,7 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 				parseUList(text)
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
-			elif text.nodeName != '#text':
+			elif text.nodeName != '#text' and text.nodeName != '#comment':
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
 	p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 	if p:
