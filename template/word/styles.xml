@@ -202,7 +202,7 @@
 		<w:lsdException w:name="Revision" w:semiHidden="1"/>
 		<w:lsdException w:name="List Paragraph" w:uiPriority="34" w:qFormat="1"/>
 		<w:lsdException w:name="Quote" w:uiPriority="29" w:qFormat="1"/>
-		<w:lsdException w:name="Intense Quote" w:uiPriority="30" w:qFormat="1"/>
+		<w:lsdException w:name="Abstract" w:uiPriority="30" w:qFormat="1"/>
 		<w:lsdException w:name="Medium List 2 Accent 1" w:uiPriority="66"/>
 		<w:lsdException w:name="Medium Grid 1 Accent 1" w:uiPriority="67"/>
 		<w:lsdException w:name="Medium Grid 2 Accent 1" w:uiPriority="68"/>
@@ -828,11 +828,11 @@
 			<w:szCs w:val="21"/>
 		</w:rPr>
 	</w:style>
-	<w:style w:type="paragraph" w:styleId="IntenseQuote">
-		<w:name w:val="Intense Quote"/>
+	<w:style w:type="paragraph" w:styleId="Abstract">
+		<w:name w:val="Abstract"/>
 		<w:basedOn w:val="Normal"/>
 		<w:next w:val="Normal"/>
-		<w:link w:val="IntenseQuoteChar"/>
+		<w:link w:val="AbstractChar"/>
 		<w:uiPriority w:val="30"/>
 		<w:qFormat/>
 		<w:rsid w:val="008C0612"/>
@@ -851,10 +851,10 @@
 			<w:color w:val="4472C4" w:themeColor="accent1"/>
 		</w:rPr>
 	</w:style>
-	<w:style w:type="character" w:customStyle="1" w:styleId="IntenseQuoteChar">
-		<w:name w:val="Intense Quote Char"/>
+	<w:style w:type="character" w:customStyle="1" w:styleId="AbstractChar">
+		<w:name w:val="AbstractChar"/>
 		<w:basedOn w:val="DefaultParagraphFont"/>
-		<w:link w:val="IntenseQuote"/>
+		<w:link w:val="AbstractQuote"/>
 		<w:uiPriority w:val="30"/>
 		<w:rsid w:val="008C0612"/>
 		<w:rPr>
@@ -894,8 +894,8 @@
 			<w:color w:val="404040" w:themeColor="text1" w:themeTint="BF"/>
 		</w:rPr>
 	</w:style>
-	<w:style w:type="character" w:styleId="HTMLCode">
-		<w:name w:val="HTML Code"/>
+	<w:style w:type="character" w:styleId="Code">
+		<w:name w:val="Code"/>
 		<w:basedOn w:val="DefaultParagraphFont"/>
 		<w:uiPriority w:val="99"/>
 		<w:unhideWhenUsed/>
