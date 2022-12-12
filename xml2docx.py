@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #   Copyright 2020, Eric Vyncke, evyncke@cisco.com
@@ -142,7 +142,7 @@ def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumber
 	return docxP
 
 libsTable = { 
-	'RFC': 'http://www.rfc-editor.org/refs/bibxml/',
+	'RFC': 'https://www.rfc-editor.org/refs/bibxml/',
 	'I-D': 'http://xml2rfc.ietf.org/public/rfc/bibxml3/',
 	'W3C': 'http://xml2rfc.ietf.org/public/rfc/bibxml4/',
 	'SDO-3GPP': 'http://xml2rfc.ietf.org/public/rfc/bibxml5/',
@@ -471,12 +471,14 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 			elif author.hasAttribute('fullname'):
 				authorName = author.getAttribute('fullname')
 			else:   # Let's find the <organization> element
-				orgElem = frontElem.getElementsByTagName('organization')[0]
-				if orgElem:
-					authorName = ''
-					for child in orgElem.childNodes:
-						if child.nodeType == Node.TEXT_NODE:
-							authorName += child.nodeValue
+				orgElems = frontElem.getElementsByTagName('organization')
+				if orgElems:
+					orgElem = orgElems[0]
+					if orgElem:
+						authorName = ''
+						for child in orgElem.childNodes:
+							if child.nodeType == Node.TEXT_NODE:
+								authorName += child.nodeValue
 			text += authorName + ', '
 		if frontElem.getElementsByTagName('title'):
 			titleElem = frontElem.getElementsByTagName('title')[0]
