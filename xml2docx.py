@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#   Copyright 2020, Eric Vyncke, evyncke@cisco.com
+#   Copyright 2020-2025, Eric Vyncke, evyncke@cisco.com
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -712,6 +712,11 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 				parseUList(text)
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
+			elif text.nodeName == 'tt': # Fixed font
+				# textValue = textValue + parseText(text, style = 'Code', numberingID = None, indentationLevel = None, Verbose = True)
+				parseText(text, style = 'Code', numberingID = None, indentationLevel = None, Verbose = True)
+#			elif text.nodeName == 'em': # italics font
+#				textValue = textValue + parseText(text, style = 'Emphasis', numberingID = None, indentationLevel = None)
 			elif text.nodeName != '#text' and text.nodeName != '#comment':
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
 	p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
@@ -773,7 +778,7 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 		xmldoc = minidom.parse(inFilename)
 	else:
 		try:
-			response = urllib.request.urlopen('https://tools.ietf.org/id/' + inFilename + '.xml')
+			response = urllib.request.urlopen('https://datatracker.ietf.org/doc/id/' + inFilename + '.xml')
 		except:
 			print("Cannot fetch the XML document from the IETF site...")
 			sys.exit(1)
