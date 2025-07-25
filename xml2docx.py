@@ -14,8 +14,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-   
-# A lot of information in http://officeopenxml.com/anatomyofOOXML.php
 
 # TODO
 # Handle external entities used notably for references...
@@ -30,17 +28,41 @@ from xml.dom import minidom, Node
 import xml.dom
 from pprint import pprint
 import sys, getopt
-import io, os
-import zipfile
-import tempfile, datetime
+import os
+
+import datetime
 import urllib.request
+import docxWriter
 
-# Same states to be kept
-rfcDate = None
-rfcAuthors = []
-rfcTitle = None
-rfcKeywords = []
+class xmlWriter:
+	# Same states to be kept
+	metaData = {}  # A dict for slugs: authors, date, keywords, title
+	filename = None
 
+	def __init__(self, filename = None):
+		self.filename = filename
+
+	def save(self):
+		pass
+
+	def getMetaData(self, slug):
+		if slug in self.metaData:
+			return self.metaData[slug]
+		else:
+			return None
+	
+	def setMetaData(self, slug, value):
+		if slug in self.metaData:
+			self.metaData[slug].append(value)
+		else:
+			self.metaData[slug] = [value]
+
+	def newParagraph(self, textValue, style = 'Normal', justification = None, unnumbered = None, 
+				  numberingID = None, indentationLevel = None, removeEmpty = True, 
+				  language = 'en-US', cdataSection = None):
+		pass
+
+# For debugging purpose
 def printTree(front):
 	print('All children:')
 	for elem in front.childNodes:
@@ -62,84 +84,7 @@ def printTree(front):
 	print("\n----------\n")
 
 def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None, removeEmpty = True, language = 'en-US', cdataSection = None):
-	if textValue is None:
-		return None
-	if cdataSection == None:  # remove extra spaces only if CDATA is not requested
-		textValue = ' '.join(textValue.split())
-	if textValue == '' and removeEmpty:
-		return None
-	docxP = docxRoot.createElement('w:p')
-	
-# First handle the style or justification
-#	<w:pPr>
-#			<w:pStyle w:val="Title"/>
-#			<w:jc w:val="right"/>
-#			<w:rPr>
-#				<w:lang w:val="en-US"/>
-#			</w:rPr>
-#	</w:pPr>
-	pPr = docxRoot.createElement('w:pPr')
-	if style != None:
-		pStyle =  docxRoot.createElement('w:pStyle')
-		pStyle.setAttribute('w:val', style) 
-		pPr.appendChild(pStyle)
-	if justification != None:
-		jc =  docxRoot.createElement('w:jc')
-		jc.setAttribute('w:val', justification) 
-		pPr.appendChild(jc)
-	if unnumbered:  # Try to override the default numbering in the style
-		numPr = docxRoot.createElement('w:numPr')
-		ilvl = docxRoot.createElement('w:ilvl ')
-		ilvl.setAttribute('w:val', 0)
-		numPr.appendChild(ilvl)
-		numId = docxRoot.createElement('w:numId')
-		numId.setAttribute('w:val', 0)
-		numPr.appendChild(numId)
-		pPr.appendChild(numPr)
-	elif numberingID != None and indentationLevel != None:
-#				<w:numPr>
-#					<w:ilvl w:val="0"/>
-#					<w:numId w:val="2"/>
-#				</w:numPr>
-		numPr = docxRoot.createElement('w:numPr')
-		ilvl = docxRoot.createElement('w:ilvl ')
-		ilvl.setAttribute('w:val', indentationLevel)
-		numPr.appendChild(ilvl)
-		numId = docxRoot.createElement('w:numId')
-		numId.setAttribute('w:val', numberingID)
-		numPr.appendChild(numId)
-		pPr.appendChild(numPr)
-	docxP.appendChild(pPr)
-	
-# Then handle the actual text
-#	<w:r w:rsidRPr="00C46909">
-#		<w:rPr>
-#			<w:lang w:val="en-US"/>
-#		</w:rPr>
-#		<w:t>Title</w:t>
-#	</w:r>
-	r = docxRoot.createElement('w:r')
-	rPr = docxRoot.createElement('w:rPr')
-	if language != None:
-		lang = 	docxRoot.createElement('w:lang')
-		lang.setAttribute('w:val', language)
-		rPr.appendChild(lang)
-	elif style != None:  # Seems mandatory for figure ASCII art to repeat the style per run
-		rStyle = 	docxRoot.createElement('w:rStyle')
-		rStyle.setAttribute('w:val', style)
-		rPr.appendChild(rStyle)
-	r.appendChild(rPr)
-	t = docxRoot.createElement('w:t')
-	if cdataSection == None:
-		text = docxRoot.createTextNode(textValue)
-	else:
-		t.setAttribute('xml:space', 'preserve')
-		text = docxRoot.createTextNode(textValue)
-#		text = docxRoot.createCDATASection(textValue)   # xml:space is enough to keep leading spaces, CDATA adds 4 tabs after in the pretty printing :-(
-	t.appendChild(text)
-	r.appendChild(t) 
-	docxP.appendChild(r)
-	return docxP
+	return writer.newParagraph(textValue, style, justification, unnumbered, numberingID, indentationLevel, removeEmpty, language, cdataSection)
 
 libsTable = { 
 	'RFC': 'https://www.rfc-editor.org/refs/bibxml/',
@@ -191,7 +136,7 @@ def parseArea(elem):
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
-	docxBody.appendChild(docxNewParagraph(textValue))
+	writer.newParagraph(textValue)
 
 def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
 	# If there is no type attribute, let's process the element
@@ -203,10 +148,10 @@ def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2
 			figureLines += text
 		# Let's split this string into lines and print each line
 		for line in figureLines.splitlines():
-			docxBody.appendChild(docxNewParagraph(line.rstrip(" \t"), style = 'Code', removeEmpty = False, language = None, cdataSection = True))
+			writer.newParagraph(line.rstrip(" \t"), style = 'Code', removeEmpty = False, language = None, cdataSection = True)
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
-	global rfcAuthors
+	global writer
 
 	# looking for the organization element as in https://tools.ietf.org/html/rfc7991#section-2.35 that can only contain text
 	organization = ''
@@ -219,11 +164,11 @@ def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 					organization = ', ' + grandchild.nodeValue
 
 	if elem.hasAttribute('asciiFullname'):
-		docxBody.appendChild(docxNewParagraph(elem.getAttribute('asciiFullname') + organization, justification = 'right'))
-		rfcAuthors.append(elem.getAttribute('asciiFullname') + organization)
+		writer.newParagraph(elem.getAttribute('asciiFullname') + organization, justification = 'right')
+		writer.setMetaData('authors', elem.getAttribute('asciiFullname') + organization)
 	elif elem.hasAttribute('fullname'):
-		docxBody.appendChild(docxNewParagraph(elem.getAttribute('fullname') + organization, justification = 'right'))
-		rfcAuthors.append(elem.getAttribute('fullname') + organization)
+		writer.newParagraph(elem.getAttribute('fullname') + organization, justification = 'right')
+		writer.setMetaData('authors', elem.getAttribute('fullname') + organization)
 	else:
 		author = ''
 		if elem.hasAttribute('initials'):
@@ -231,14 +176,14 @@ def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 		if elem.hasAttribute('surname'):
 			author = author + elem.getAttribute('surname')
 		if author != '':
-			docxBody.appendChild(docxNewParagraph(author + organization, justification = 'right'))
-			rfcAuthors.append(author + organization)
+			writer.newParagraph(author + organization, justification = 'right')
+			writer.setMetaData('authors', author + organization)
 
 def parseBack(elem): # https://tools.ietf.org/html/rfc7991#section-2.8
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	# Let's hope that the children are in the right order... i.e., starting with the references
-	docxBody.appendChild(docxNewParagraph('References', style = 'Heading1'))
+	writer.newParagraph('References', style = 'Heading1')
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
@@ -275,7 +220,7 @@ def parseBoilerPlate(elem):
 			print('Unexpected tagName in BoilerPlate: ', child.nodeName)
 
 def parseDate(elem):
-	global rfcDate
+	global writer
 	
 	dateString = ''
 	if elem.hasAttribute('day'):
@@ -285,8 +230,8 @@ def parseDate(elem):
 	if elem.hasAttribute('year'):
 		dateString = dateString + elem.getAttribute('year')
 	if dateString != '':
-		docxBody.appendChild(docxNewParagraph(dateString, justification = 'right'))
-		rfcDate = dateString
+		writer.newParagraph(dateString, justification = 'right')
+		writer.rfcDate = dateString
 	
 def parseDisplayReference(elem): # https://tools.ietf.org/html/rfc7991#section-2.19
 	# Presentation only... skipping it for now
@@ -330,7 +275,7 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 	if preambleChildren.length > 0 and preambleChildren[0].childNodes.length > 0:
 		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
 			preamble = preambleChildren[0].childNodes[0].nodeValue
-			docxBody.appendChild(docxNewParagraph(preamble))
+			writer.newParagraph(preamble)
 	# Let's process a single artwork
 	artworkChildren = elem.getElementsByTagName('artwork')
 	for child in artworkChildren:
@@ -349,26 +294,25 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 			if nameChild[0].nodeType == Node.ELEMENT_NODE:
 				figureTitle = nameChild[0].childNodes[0].nodeValue
 	if figureTitle != None:
-		docxBody.appendChild(docxNewParagraph('Figure: ' + figureTitle, justification = 'center'))
+		writer.newParagraph('Figure: ' + figureTitle, justification = 'center')
 	# Figure had postamble (deprecated but let's process it)
 	postambleChildren = elem.getElementsByTagName('postamble')
 	if postambleChildren.length > 0  and postambleChildren[0].childNodes.length > 0:
 		if postambleChildren[0].nodeType == Node.ELEMENT_NODE:
 			postamble = postambleChildren[0].childNodes[0].nodeValue
-			docxBody.appendChild(docxNewParagraph(postamble))
+			writer.newParagraph(postamble)
 	
 def parseKeyword(elem):
-	global rfcKeywords
 	
 	textValue = 'Keyword: '
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
-			rfcKeywords.append(text.nodeValue)
+			writer.setMetaData('keywords', text.nodeValue)
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
-	docxBody.appendChild(docxNewParagraph(textValue))
+	writer.newParagraph(textValue)
 
 def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.29
 	for child in elem.childNodes:
@@ -404,20 +348,14 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 			elif text.nodeName == 'eref':
 				textValue = textValue + parseXref(text)
 			elif text.nodeName == 'ol':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				textValue = ''
 				parseOList(text)
 			elif text.nodeName == 't':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text				textValue = ''
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				parseText(text)
 			elif text.nodeName == 'ul':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text				textValue = ''
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				parseUList(text)
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
@@ -425,9 +363,7 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 				print('!!!!! parseListItem: Text is ELEMENT_NODE: ', text.nodeName)
 #			else:
 #				print('parseListItem ignoring Text is ELEMENT_NODE: ', text.nodeName)
-	p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-	if p:
-		docxBody.appendChild(p)  # Need to emit the last part of the text
+	writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 
 def parseNote(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.33
 	print("<note> is an unsupported tag")
@@ -503,9 +439,7 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 	if text[-2:] == ', ':
 		text = text[:-2]
 	text += '.'
-	p = docxNewParagraph(text)
-	if p:
-		docxBody.appendChild(p)
+	writer.newParagraph(text)
 
 def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 	if elem.nodeType != Node.ELEMENT_NODE:
@@ -522,7 +456,7 @@ def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 			print(elem)
 			print('??? parseReferences: this references section has not title...') 
 	if sectionTitle != None:
-		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading2', unnumbered = None))
+		writer.newParagraph(sectionTitle, 'Heading2', unnumbered = None)
 	for child in elem.childNodes:
 		if child.nodeType == Node.PROCESSING_INSTRUCTION_NODE: # in this location it is probably <?rfc include='reference.RFC.2119'?> or <?rfc include='reference.I-D.ietf-emu-eaptlscert'?> 
 			if child.target == 'rfc' and (child.data[0:9] == "include='" or child.data[0:9] == 'include="'):
@@ -547,13 +481,17 @@ def parseRfc(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.45
 		return
 	rfcInfo = ''
 	if elem.hasAttribute('category'):
-		docxBody.appendChild(docxNewParagraph('Category: ' + elem.getAttribute('category')))
+		writer.setMetaData('category', elem.getAttribute('category'))
+		# docxBody.appendChild(docxNewParagraph('Category: ' + elem.getAttribute('category')))
 	if elem.hasAttribute('submissionType'):
-		docxBody.appendChild(docxNewParagraph('Submission type: ' + elem.getAttribute('submissionType')))
+		writer.setMetaData('submissionType', elem.getAttribute('submissionType'))
+		# docxBody.appendChild(docxNewParagraph('Submission type: ' + elem.getAttribute('submissionType')))
 	if elem.hasAttribute('obsoletes'):
-		docxBody.appendChild(docxNewParagraph('Obsoletes: ' + elem.getAttribute('obsoletes')))
+		writer.setMetaData('obsoletes', elem.getAttribute('obsoletes'))
+		# docxBody.appendChild(docxNewParagraph('Obsoletes: ' + elem.getAttribute('obsoletes')))
 	if elem.hasAttribute('updates'):
-		docxBody.appendChild(docxNewParagraph('Updates: ' + elem.getAttribute('updates')))
+		writer.setMetaData('updates', elem.getAttribute('updates'))
+		# docxBody.appendChild(docxNewParagraph('Updates: ' + elem.getAttribute('updates')))
 
 def parseSection(elem, headingDepth):
 	if elem.nodeType != Node.ELEMENT_NODE:
@@ -574,7 +512,7 @@ def parseSection(elem, headingDepth):
 		else:
 			print('??? This section has not title...') 
 	if sectionTitle != None:
-		docxBody.appendChild(docxNewParagraph(sectionTitle, 'Heading' + str(headingDepth), unnumbered = unnumbered))
+		writer.newParagraph(sectionTitle, 'Heading' + str(headingDepth), unnumbered = unnumbered)
 	sectionId = 0
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -638,7 +576,7 @@ def parseSeriesInfo(elem):
 	if elem.hasAttribute('stream'):
 		seriesInfoString = seriesInfoString + ' (stream: ' + elem.getAttribute('stream') + ')'
 	if seriesInfoString != '':
-		docxBody.appendChild(docxNewParagraph(seriesInfoString, justification = 'right'))
+		writer.newParagraph(seriesInfoString, justification = 'right')
 
 		
 def parseText(elem, style = None, numberingID = None, indentationLevel = None, Verbose = None):  # See https://tools.ietf.org/html/rfc7991#section-2.53
@@ -670,44 +608,30 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 			elif text.nodeName == 'eref':
 				textValue = textValue + parseEref(text)
 			elif text.nodeName == 'figure':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				textValue = ''
 				parseFigure(text)
 			elif text.nodeName == 'list':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				textValue = ''
 				parseList(text)
 			elif text.nodeName == 'ol':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				textValue = ''
 				parseOList(text)
 			elif text.nodeName == 't':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				if Verbose:
 					print("parseText found <t>: emitting '", textValue, "'")
 				textValue = ''
 				parseText(text, style = style, numberingID = numberingID, indentationLevel = indentationLevel, Verbose = Verbose)
 			elif text.nodeName == 'vspace':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				# Now force an empty paragraph
-				p = docxNewParagraph('', style = style, removeEmpty = False)
-				if p:
-					docxBody.appendChild(p)  
+				writer.newParagraph('', style = style, removeEmpty = False)
 				textValue = ''
 			elif text.nodeName == 'ul':
-				p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-				if p:
-					docxBody.appendChild(p)  # Need to emit the first part of the text
+				writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 				textValue = ''
 				parseUList(text)
 			elif text.nodeName == 'xref':
@@ -719,23 +643,20 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 #				textValue = textValue + parseText(text, style = 'Emphasis', numberingID = None, indentationLevel = None)
 			elif text.nodeName != '#text' and text.nodeName != '#comment':
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
-	p = docxNewParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
-	if p:
-		docxBody.appendChild(p)  # Need to emit the first part of the text
+	writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 
 def parseTextTable(elem):
 	print('Skipping TextTable')
-	docxBody.appendChild(docxNewParagraph('... a TextTable was not imported...', justification = 'center'))
+	writer.newParagraph('... a TextTable was not imported...', justification = 'center')
 	
 def parseTitle(elem):
-	global rfcTitle
 	
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
-	docxBody.appendChild(docxNewParagraph(textValue, 'Title'))
-	rfcTitle = textValue 
+	writer.newParagraph(textValue, 'Title')
+	writer.rfcTitle = textValue 
 
 def parseUList(elem):
 	for child in elem.childNodes:
@@ -754,7 +675,7 @@ def parseWorkgroup(elem):
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
-	docxBody.appendChild(docxNewParagraph(textValue))
+	writer.newParagraph(textValue)
 
 def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 	if elem.nodeValue != None:
@@ -792,86 +713,12 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	middle = rfc.getElementsByTagName('middle')[0]
 	back = rfc.getElementsByTagName('back')[0]
 
-	domImplementation = xml.dom.getDOMImplementation()
-	docxRoot = domImplementation.createDocument(None, None, None)
-
-	docxDocument = docxRoot.createElement('w:document')
-	docxDocument.setAttribute('xmlns:wpc', 'http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas') # To be repeated for all namespaces
-	docxDocument.setAttribute('xmlns:cx', 'http://schemas.microsoft.com/office/drawing/2014/chartex') 
-	docxDocument.setAttribute('xmlns:cx1', 'http://schemas.microsoft.com/office/drawing/2015/9/8/chartex') 
-	docxDocument.setAttribute('xmlns:cx2', 'http://schemas.microsoft.com/office/drawing/2015/10/21/chartex') 
-	docxDocument.setAttribute('xmlns:cx3', 'http://schemas.microsoft.com/office/drawing/2016/5/9/chartex') 
-	docxDocument.setAttribute('xmlns:cx4', 'http://schemas.microsoft.com/office/drawing/2016/5/10/chartex') 
-	docxDocument.setAttribute('xmlns:cx5', 'http://schemas.microsoft.com/office/drawing/2016/5/11/chartex') 
-	docxDocument.setAttribute('xmlns:cx6', 'http://schemas.microsoft.com/office/drawing/2016/5/12/chartex') 
-	docxDocument.setAttribute('xmlns:cx7', 'http://schemas.microsoft.com/office/drawing/2016/5/13/chartex') 
-	docxDocument.setAttribute('xmlns:cx8', 'http://schemas.microsoft.com/office/drawing/2016/5/14/chartex') 
-	docxDocument.setAttribute('xmlns:mc', 'http://schemas.openxmlformats.org/markup-compatibility/2006') 
-	docxDocument.setAttribute('xmlns:aink', 'http://schemas.microsoft.com/office/drawing/2016/ink') 
-	docxDocument.setAttribute('xmlns:am3d', 'http://schemas.microsoft.com/office/drawing/2017/model3d') 
-	docxDocument.setAttribute('xmlns:o', 'urn:schemas-microsoft-com:office:office') 
-	docxDocument.setAttribute('xmlns:r', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships') 
-	docxDocument.setAttribute('xmlns:m', 'http://schemas.openxmlformats.org/officeDocument/2006/math') 
-	docxDocument.setAttribute('xmlns:v', 'urn:schemas-microsoft-com:vml') 
-	docxDocument.setAttribute('xmlns:wp14', 'http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing') 
-	docxDocument.setAttribute('xmlns:wp', 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing') 
-	docxDocument.setAttribute('xmlns:w10', 'urn:schemas-microsoft-com:office:word') 
-	docxDocument.setAttribute('xmlns:w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main') 
-	docxDocument.setAttribute('xmlns:w14', 'http://schemas.microsoft.com/office/word/2010/wordml') 
-	docxDocument.setAttribute('xmlns:w15', 'http://schemas.microsoft.com/office/word/2012/wordml') 
-	docxDocument.setAttribute('xmlns:w16cex', 'http://schemas.microsoft.com/office/word/2018/wordml/cex') 
-	docxDocument.setAttribute('xmlns:w16cid', 'http://schemas.microsoft.com/office/word/2016/wordml/cid') 
-	docxDocument.setAttribute('xmlns:w16', 'http://schemas.microsoft.com/office/word/2018/wordml') 
-	docxDocument.setAttribute('xmlns:w16se', 'http://schemas.microsoft.com/office/word/2015/wordml/symex') 
-	docxDocument.setAttribute('xmlns:wpg', 'http://schemas.microsoft.com/office/word/2010/wordprocessingGroup') 
-	docxDocument.setAttribute('xmlns:wpi', 'http://schemas.microsoft.com/office/word/2010/wordprocessingInk') 
-	docxDocument.setAttribute('xmlns:wne', 'http://schemas.microsoft.com/office/word/2006/wordml') 
-	docxDocument.setAttribute('xmlns:wps', 'http://schemas.microsoft.com/office/word/2010/wordprocessingShape') 
-	docxDocument.setAttribute('mc:Ignorable', 'w14 w15 w16se w16cid w16 w16cex wp14')	
-	docxDocument.setAttribute('xmlns:w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main')
-	docxRoot.appendChild(docxDocument)
-	
-	docxBody = docxRoot.createElement('w:body')
-	docxDocument.appendChild(docxBody)
 
 	parseRfc(rfc)
 	parseSection(front, 0)
 	parseSection(middle, 0)
 	parseBack(back)
 	
-	sectPrElem = docxRoot.createElement('w:sectPr')
-	
-	pgSzElem = docxRoot.createElement('w:pgSz')
-	pgSzElem.setAttribute('w:h', '15840')
-	pgSzElem.setAttribute('w:w', '12240')
-	sectPrElem.appendChild(pgSzElem)
-
-	pgMarElem = docxRoot.createElement('w:pgMar')
-	pgMarElem.setAttribute('w:gutter', '0')
-	pgMarElem.setAttribute('w:footer', '708')
-	pgMarElem.setAttribute('w:header', '708')
-	pgMarElem.setAttribute('w:left', '1440')
-	pgMarElem.setAttribute('w:bottom', '1400')
-	pgMarElem.setAttribute('w:right', '1440')
-	pgMarElem.setAttribute('w:top', '1440')
-	sectPrElem.appendChild(pgMarElem)
-	
-	
-	colsElem = docxRoot.createElement('w:cols')
-	colsElem.setAttribute('w:space', '708')
-	sectPrElem.appendChild(colsElem)
-
-	docGrid = docxRoot.createElement('w:docGrid')
-	docGrid.setAttribute('w:linePitch', '360')
-	sectPrElem.appendChild(docGrid)
-	
-	docxBody.appendChild(sectPrElem)
-	
-	docxFile = io.open(outFilename, 'w', encoding="'utf8'")
-	# Ugly but no other way to put attributes in the top XML 
-	docxFile.write(docxRoot.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'))
-	docxFile.close()
-	print('OpenXML document.xml file is at', outFilename)
 
 def myParseDate(s):
 	try:
@@ -885,63 +732,6 @@ def myParseDate(s):
 			date = datetime.datetime.utcnow()  # Giving up...
 	return date
 	
-def generateDocPropsCore():
-	xmlcore = minidom.parse(templateDirectory + '/docProps/core.xml')
-
-	if len(rfcAuthors) > 0:
-		creatorElem = xmlcore.getElementsByTagName('dc:creator')[0]
-		for child in creatorElem.childNodes:
-			creatorElem.removeChild(child)
-		text = xmlcore.createTextNode(', '.join(rfcAuthors))
-		creatorElem.appendChild(text)
-	if rfcDate != None:
-		createdElem = xmlcore.getElementsByTagName('dcterms:created')[0]
-		for child in createdElem.childNodes:
-			createdElem.removeChild(child)
-		createdDate = myParseDate(rfcDate)	
-		text = xmlcore.createTextNode(createdDate.strftime('%Y-%m-%dT%H:%M:%SZ'))
-		createdElem.appendChild(text)
-	if len(rfcKeywords) > 0:
-		keywordsElem = xmlcore.getElementsByTagName('cp:keywords')[0]
-		for child in keywordsElem.childNodes:
-			keywordsElem.removeChild(child)
-		text = xmlcore.createTextNode(', '.join(rfcKeywords))
-		keywordsElem.appendChild(text)
-	if rfcTitle != None:
-		titleElem = xmlcore.getElementsByTagName('dc:title')[0]
-		for child in titleElem.childNodes:
-			titleElem.removeChild(child)
-		text = xmlcore.createTextNode(rfcTitle)
-		titleElem.appendChild(text)
-	# Now, let's say that this script did it ;-)
-	modifiedByElem = xmlcore.getElementsByTagName('cp:lastModifiedBy')[0]
-	for child in modifiedByElem.childNodes:
-		modifiedByElem.removeChild(child)
-	text = xmlcore.createTextNode('Xml2rfc')
-	modifiedByElem.appendChild(text)
-	modifiedElem = xmlcore.getElementsByTagName('dcterms:modified')[0]
-	for child in modifiedElem.childNodes:
-		modifiedElem.removeChild(child)
-	now = datetime.datetime.utcnow()
-	text = xmlcore.createTextNode(now.strftime('%Y-%m-%dT%H:%M:%SZ'))
-	modifiedElem.appendChild(text)
-	
-	return xmlcore.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
-	
-def docxPackage(docxFilename, openXML, templateDirectory):
-	print('Generating OpenXML packaging file', docxFilename)
-	print("\tUsing template in" + templateDirectory)
-	coreXML = generateDocPropsCore()
-	with zipfile.ZipFile(docxFilename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
-		files = [ '[Content_Types].xml', '_rels/.rels', 'docProps/app.xml', 
-			# Should not move the output in template directory... 'word/document.xml', 	
-			'word/fontTable.xml', 'word/settings.xml', 'word/numbering.xml', 'word/webSettings.xml',
-			'word/styles.xml', 'word/theme/theme1.xml', 'word/_rels/document.xml.rels']
-		for file in files:
-			docx.write(templateDirectory + '/' + file, arcname = file)
-		docx.write(openXML, arcname = 'word/document.xml')
-		docx.writestr('docProps/core.xml', coreXML)
-
 if __name__ == '__main__':
 	inFilename = None 
 	outFilename = None
@@ -964,11 +754,10 @@ if __name__ == '__main__':
 			templateDirectory = arg
 		elif opt in ("-d", "--docx"):
 			docxFilename = arg
-	if templateDirectory == None: 
-		templateDirectory = os.path.dirname(os.path.abspath(sys.argv[0])) + '/template' # default template is in the executable directory
 	if inFilename == None:
 		print('Missing input filename')
 		sys.exit(2)
+
 	if outFilename == None:
 		if docxFilename != None:
 			outFilename = templateDirectory + '/word/document.xml'
@@ -979,9 +768,13 @@ if __name__ == '__main__':
 			docxFilename = inFilename.replace('.xml', '.docx')
 		else:
 			docxFilename = inFilename + '.docx'
-			
+
+	# Assuming DOCX write from now		
+	writer = docxWriter.docxWriter(docxFilename)
+	writer.templateDirectory = templateDirectory
+
 	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)
 
 	# Now, let's generate the .DOCX file
-	docxPackage(docxFilename, outFilename, templateDirectory)
+	writer.save()
