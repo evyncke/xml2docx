@@ -15,6 +15,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+# XML2RFC is in
+# https://datatracker.ietf.org/doc/html/rfc7998 "xml2rfc" Version 3 Preparation Tool Description
+# https://datatracker.ietf.org/doc/rfc7991/ The "xml2rfc" Version 3 Vocabulary
 # TODO
 # Handle external entities used notably for references...
 # https://www.w3schools.com/xml/xml_dtd_entities.asp
@@ -37,7 +40,7 @@ import docxWriter
 class xmlWriter:
 	# Same states to be kept
 	metaData = {}  # A dict for slugs: authors, date, keywords, title
-	filename = None
+	filename = None  # The filename of the to-be-created file
 
 	def __init__(self, filename = None):
 		self.filename = filename
@@ -135,7 +138,7 @@ def parseArea(elem):
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
-				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
+				print('!!!!! parseArea: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.newParagraph(textValue)
 
 def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
@@ -304,15 +307,12 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 	
 def parseKeyword(elem):
 	
-	textValue = 'Keyword: '
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
-			textValue += text.nodeValue
 			writer.setMetaData('keywords', text.nodeValue)
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
-	writer.newParagraph(textValue)
 
 def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.29
 	for child in elem.childNodes:
@@ -484,7 +484,7 @@ def parseRfc(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.45
 		writer.setMetaData('category', elem.getAttribute('category'))
 		# docxBody.appendChild(docxNewParagraph('Category: ' + elem.getAttribute('category')))
 	if elem.hasAttribute('submissionType'):
-		writer.setMetaData('submissionType', elem.getAttribute('submissionType'))
+		writer.setMetaData('submissiontype', elem.getAttribute('submissionType'))
 		# docxBody.appendChild(docxNewParagraph('Submission type: ' + elem.getAttribute('submissionType')))
 	if elem.hasAttribute('obsoletes'):
 		writer.setMetaData('obsoletes', elem.getAttribute('obsoletes'))
@@ -655,8 +655,8 @@ def parseTitle(elem):
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
-	writer.newParagraph(textValue, 'Title')
-	writer.rfcTitle = textValue 
+	writer.newParagraph(textValue, style = 'Title')
+	writer.setMetaData('title', textValue)
 
 def parseUList(elem):
 	for child in elem.childNodes:
@@ -674,7 +674,7 @@ def parseWorkgroup(elem):
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
-				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
+				print('!!!!! parseWorkgroup: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.newParagraph(textValue)
 
 def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66

@@ -76,13 +76,14 @@ class docxWriter(xmlWriter):
     
     def setMetaData(self, slug, value):
         super().setMetaData(slug, value)
-        # Now it also needs to appear in the DOCX as capitalized slug
-        self.newParagraph(slug.title() + ': ' + value)
+        print('docxWriter.setMetaData: slug =', slug, 'value =', value)
+        if not (slug in ['authors', 'title']):
+            self.newParagraph(slug.title() + ': ' + value)
 
     def _generateDocPropsCore(self):
         xmlcore = minidom.parse(self.templateDirectory + '/docProps/core.xml')
 
-        if len(self.getMetaData('authors')) > 0:
+        if self.getMetaData('authors'):
             creatorElem = xmlcore.getElementsByTagName('dc:creator')[0]
             for child in creatorElem.childNodes:
                 creatorElem.removeChild(child)
@@ -95,7 +96,7 @@ class docxWriter(xmlWriter):
             createdDate = myParseDate(self.getMetaData('date'))	
             text = xmlcore.createTextNode(createdDate.strftime('%Y-%m-%dT%H:%M:%SZ'))
             createdElem.appendChild(text)
-        if len(self.getMetaData('keywords')) > 0:
+        if self.getMetaData('keywords') != None:
             keywordsElem = xmlcore.getElementsByTagName('cp:keywords')[0]
             for child in keywordsElem.childNodes:
                 keywordsElem.removeChild(child)
@@ -105,7 +106,7 @@ class docxWriter(xmlWriter):
             titleElem = xmlcore.getElementsByTagName('dc:title')[0]
             for child in titleElem.childNodes:
                 titleElem.removeChild(child)
-            text = xmlcore.createTextNode(self.getMetaData('title'))
+            text = xmlcore.createTextNode(self.getMetaData('title')[0])  # Only one title
             titleElem.appendChild(text)
         # Now, let's say that this script did it ;-)
         modifiedByElem = xmlcore.getElementsByTagName('cp:lastModifiedBy')[0]
@@ -163,7 +164,7 @@ class docxWriter(xmlWriter):
         docxFile.close()
         print('OpenXML document.xml file is at', self.openXML)
 
-        print('Generating OpenXML packaging file', self.openXML)
+        print('Generating OpenXML packaging file', self.filename)
         print("\tUsing template in" + self.templateDirectory)
         coreXML = self._generateDocPropsCore()
         with zipfile.ZipFile(self.filename, 'w', compression=zipfile.ZIP_DEFLATED) as docx:
