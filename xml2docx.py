@@ -40,6 +40,7 @@ import docxWriter
 class xmlWriter:
 	# Same states to be kept
 	metaData = {}  # A dict for slugs: authors, date, keywords, title
+	abstract = []  # A list of paragraphs in the abstract
 	filename = None  # The filename of the to-be-created file
 
 	def __init__(self, filename = None):
@@ -63,6 +64,9 @@ class xmlWriter:
 	def newParagraph(self, textValue, style = 'Normal', justification = None, unnumbered = None, 
 				  numberingID = None, indentationLevel = None, removeEmpty = True, 
 				  language = 'en-US', cdataSection = None):
+		# As parseText() is the same  for front and body elements 
+		if style is not None and style == "Abstract":
+			self.abstract.append(textValue)
 		pass
 
 # For debugging purpose
