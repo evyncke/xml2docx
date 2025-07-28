@@ -275,7 +275,7 @@ class docxWriter(xmlWriter):
                 docxR = self.docxRoot.createElement('w:r')
                 docxT = self.docxRoot.createElement('w:t')
                 text = self.docxRoot.createTextNode(cell.text)
-                if row.rowType == 'thead':
+                if row.rowType == 'thead' or row.rowType == 'tfoot':
                     rPr = self.docxRoot.createElement('w:rPr')
                     b = self.docxRoot.createElement('w:b')
                     rPr.appendChild(b)
@@ -289,3 +289,6 @@ class docxWriter(xmlWriter):
             docxTable.appendChild(docxRow)
         
         self.docxBody.appendChild(docxTable)
+        # Write the table caption if any
+        if table.name:
+            self.newParagraph(table.name, style = 'Caption', justification = 'center')
