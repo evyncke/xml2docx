@@ -189,15 +189,13 @@ def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 def parseBack(elem): # https://tools.ietf.org/html/rfc7991#section-2.8
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
-	# Let's hope that the children are in the right order... i.e., starting with the references
-	writer.newParagraph('References', style = 'Heading1')
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
 		if child.nodeName == 'displayreference':
 			parseDisplayReference(child)
 		elif child.nodeName == 'references':
-			parseReferences(child)
+			parseReferences(child, 1)
 		elif child.nodeName == 'section':
 			parseSection(child, 2)
 		else:
@@ -445,7 +443,7 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 	text += '.'
 	writer.newParagraph(text)
 
-def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
+def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc7991#section-2.42
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	sectionTitle = None
@@ -460,7 +458,7 @@ def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 			print(elem)
 			print('??? parseReferences: this references section has not title...') 
 	if sectionTitle != None:
-		writer.newParagraph(sectionTitle, 'Heading2', unnumbered = None)
+		writer.newParagraph(sectionTitle, 'Heading' + str(headingLevel), unnumbered = None)
 	for child in elem.childNodes:
 		if child.nodeType == Node.PROCESSING_INSTRUCTION_NODE: # in this location it is probably <?rfc include='reference.RFC.2119'?> or <?rfc include='reference.I-D.ietf-emu-eaptlscert'?> 
 			if child.target == 'rfc' and (child.data[0:9] == "include='" or child.data[0:9] == 'include="'):
@@ -477,8 +475,13 @@ def parseReferences(elem): # https://tools.ietf.org/html/rfc7991#section-2.42
 			continue
 		if child.nodeName == 'reference':
 			parseReference(child)
-		else:
+		elif child.nodeName == 'references':
+			parseReferences(child, headingLevel + 1)
+		elif child.nodeName != 'name': # <name> is already processed
 			print('!!!! parseReferences: unexpected nodeName: ' + child.nodeName)
+
+def parseName(elem): 
+	pass # EVY ?
 
 def parseRfc(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.45 
 	if elem.nodeType != Node.ELEMENT_NODE:
