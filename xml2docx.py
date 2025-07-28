@@ -382,7 +382,32 @@ def parseOList(elem):
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 
-def parseReference(elem, isNormative = False):  # See https://tools.ietf.org/html/rfc7991#section-2.40
+def parseReferenceGroup(elem, isNormative = False):  # See https://tools.ietf.org/html/rfc7991#section-2.40
+	if elem.nodeType != Node.ELEMENT_NODE:
+		return
+	if elem.hasAttribute('anchor'):
+		serie = elem.getAttribute('anchor')[0:3]
+		text = '[' + elem.getAttribute('anchor') + ']  '
+		if serie == 'BCP':
+			text += ' Best Current Practice'
+		elif serie == 'FYI':
+			text += ' For Your Information'
+		elif serie == 'STD':
+			text += ' Internet Standard'
+	else:
+		print('!!!! parseReference, missing anchor attribute')
+		return
+	text += f"\nAt the time of writing, this {serie} comprises the following:\n"
+	writer.newParagraph(text)
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		if child.nodeName == 'reference':
+			parseReference(child, isNormative = isNormative, isSubReference = True)
+		else:
+			print('!!!! Unexpected ReferenceGroup child: ', child.nodeName)
+
+def parseReference(elem, isNormative = False, isSubReference = False):  # See https://tools.ietf.org/html/rfc7991#section-2.40
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	if elem.hasAttribute('anchor'):
@@ -450,7 +475,10 @@ def parseReference(elem, isNormative = False):  # See https://tools.ietf.org/htm
 	if text[-2:] == ', ':
 		text = text[:-2]
 	text += '.'
-	writer.newParagraph(text)
+	if isSubReference:
+		writer.newParagraph(text, style = 'ListParagraph', numberingID = '2', indentationLevel = '0') # numID = 2 is defined in numbering.xml as bullet list
+	else:
+		writer.newParagraph(text)
 
 def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc7991#section-2.42
 	if elem.nodeType != Node.ELEMENT_NODE:
@@ -464,7 +492,6 @@ def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc79
 			if nameChild[0].nodeType == Node.ELEMENT_NODE:
 				sectionTitle = nameChild[0].childNodes[0].nodeValue
 		else:
-			print(elem)
 			print('??? parseReferences: this references section has not title...')
 	isNormative = (sectionTitle is not None and sectionTitle.startswith('Normative References'))
 	if sectionTitle != None:
@@ -484,9 +511,11 @@ def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc79
 			print('!!!! parseReferences: unexpected nodeType: ', child)
 			continue
 		if child.nodeName == 'reference':
-			parseReference(child, isNormative)
+			parseReference(child, isNormative = isNormative, isSubReference = False)
 		elif child.nodeName == 'references':
 			parseReferences(child, headingLevel + 1)
+		elif child.nodeName == 'referencegroup':
+			parseReferenceGroup(child, isNormative = isNormative)
 		elif child.nodeName != 'name': # <name> is already processed
 			print('!!!! parseReferences: unexpected nodeName: ' + child.nodeName)
 
@@ -655,7 +684,7 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 				textValue = textValue + parseXref(text)
 			elif text.nodeName == 'tt': # Fixed font
 				# textValue = textValue + parseText(text, style = 'Code', numberingID = None, indentationLevel = None, Verbose = True)
-				parseText(text, style = 'Code', numberingID = None, indentationLevel = None, Verbose = True)
+				parseText(text, style = 'Code', numberingID = None, indentationLevel = None)
 #			elif text.nodeName == 'em': # italics font
 #				textValue = textValue + parseText(text, style = 'Emphasis', numberingID = None, indentationLevel = None)
 			elif text.nodeName != '#text' and text.nodeName != '#comment':
