@@ -41,6 +41,8 @@ class xmlWriter:
 	# Same states to be kept
 	metaData = {}  # A dict for slugs: authors, date, keywords, title
 	abstract = []  # A list of paragraphs in the abstract
+	normativeReferences = []  # A list of normative references
+	informativeReferences = []  # A list of informative references
 	filename = None  # The filename of the to-be-created file
 
 	def __init__(self, filename = None):
@@ -380,7 +382,7 @@ def parseOList(elem):
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 
-def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.40
+def parseReference(elem, isNormative = False):  # See https://tools.ietf.org/html/rfc7991#section-2.40
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	if elem.hasAttribute('anchor'):
@@ -394,6 +396,12 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 		if serieInfo.hasAttribute('name') and serieInfo.hasAttribute('value'):
 			if serieInfo.getAttribute('value') != '': # Sometimes the value field is empty... no need to add a useless space
 				seriesInfoText += serieInfo.getAttribute('name') + ' ' + serieInfo.getAttribute('value') + ', '
+				if serieInfo.getAttribute('name') in ('RFC', 'STD', 'BCP', 'FYI'):
+					if isNormative:
+						writer.normativeReferences.append(serieInfo.getAttribute('name') + serieInfo.getAttribute('value'))
+					else:
+						writer.informativeReferences.append(serieInfo.getAttribute('name') + serieInfo.getAttribute('value'))
+				text += serieInfo.getAttribute('name') + ' ' + serieInfo.getAttribute('value') + ', '
 			else:
 				seriesInfoText += serieInfo.getAttribute('name') + ', '
 		else:
@@ -457,7 +465,8 @@ def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc79
 				sectionTitle = nameChild[0].childNodes[0].nodeValue
 		else:
 			print(elem)
-			print('??? parseReferences: this references section has not title...') 
+			print('??? parseReferences: this references section has not title...')
+	isNormative = (sectionTitle is not None and sectionTitle.startswith('Normative References'))
 	if sectionTitle != None:
 		writer.newParagraph(sectionTitle, 'Heading' + str(headingLevel), unnumbered = None)
 	for child in elem.childNodes:
@@ -475,7 +484,7 @@ def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc79
 			print('!!!! parseReferences: unexpected nodeType: ', child)
 			continue
 		if child.nodeName == 'reference':
-			parseReference(child)
+			parseReference(child, isNormative)
 		elif child.nodeName == 'references':
 			parseReferences(child, headingLevel + 1)
 		elif child.nodeName != 'name': # <name> is already processed
