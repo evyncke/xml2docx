@@ -749,9 +749,43 @@ def parseTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.54
 			print('!!!! parseTable unexpected child: ', child.nodeName)
 	writer.newTable(thisTable)  # Let's write the table to the document
 
-def parseTextTable(elem):
-	print('Skipping TextTable')
-	writer.newParagraph('... a TextTable was not imported...', justification = 'center')
+def parseTextTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.55
+	thisTable = tableTable()
+	if elem.getAttribute('title') is not None:
+		thisTable.setName(elem.getAttribute('title'))
+	columnCount = 0 # The count of columns in the table
+	cellIndex = None # The cell index in the current row
+	preAmble = None
+	postAmble = None
+	thisRow = None
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		elif child.nodeName == 'preamble':
+			preAmble = child.childNodes[0].nodeValue
+		elif child.nodeName == 'ttcol':  # Top Header
+			columnCount += 1
+			if thisRow is None:
+				thisRow = tableRow(rowType = 'thead')
+			thisRow.addCell(tableCell(child.childNodes[0].nodeValue))
+		elif child.nodeName == 'c': # Cell  
+			# Do we need to output the previous row ?
+			if cellIndex is None or cellIndex >= columnCount: 
+				thisTable.addRow(thisRow)
+				thisRow = tableRow(rowType= 'tbody')
+				cellIndex = 0
+			thisRow.addCell(tableCell(child.childNodes[0].nodeValue))
+			cellIndex += 1
+		elif child.nodeName == 'postamble':
+			postAmble = child.childNodes[0].nodeValue)
+		else:
+			print('!!!! parseTextTable unexpected child: ', child.nodeName)
+	thisTable.addRow(thisRow) # optimistic...
+	if preAmble is not None:
+		writer.newParagraph(preAmble) 
+	writer.newTable(thisTable)  # Let's write the table to the document
+	if postAmble is not None:
+		writer.newParagraph(postAmble) 
 	
 def parseTitle(elem):
 	textValue = ''
