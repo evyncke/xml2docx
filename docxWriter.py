@@ -76,7 +76,6 @@ class docxWriter(xmlWriter):
     
     def setMetaData(self, slug, value):
         super().setMetaData(slug, value)
-        print('docxWriter.setMetaData: slug =', slug, 'value =', value)
         if not (slug in ['authors', 'title']):
             self.newParagraph(slug.title() + ': ' + value)
 
