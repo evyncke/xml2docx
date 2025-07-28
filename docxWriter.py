@@ -257,3 +257,35 @@ class docxWriter(xmlWriter):
         r.appendChild(t) 
         docxP.appendChild(r)
         self.docxBody.appendChild(docxP)
+
+
+    def newTable(self, table):
+        docxTable = self.docxRoot.createElement('w:tbl')
+        
+        for row in table.rows:
+            docxRow = self.docxRoot.createElement('w:tr')
+            if row.rowType == 'thead':
+                trPr = self.docxRoot.createElement('w:trPr')
+                tblHeader = self.docxRoot.createElement('w:tblHeader')
+                trPr.appendChild(tblHeader)
+                docxRow.appendChild(trPr)
+            for cell in row.cells:
+                docxCell = self.docxRoot.createElement('w:tc')
+                docxP = self.docxRoot.createElement('w:p')
+                docxR = self.docxRoot.createElement('w:r')
+                docxT = self.docxRoot.createElement('w:t')
+                text = self.docxRoot.createTextNode(cell.text)
+                if row.rowType == 'thead':
+                    rPr = self.docxRoot.createElement('w:rPr')
+                    b = self.docxRoot.createElement('w:b')
+                    rPr.appendChild(b)
+                    docxR.appendChild(rPr)
+                docxR.appendChild(docxT)
+                docxT.appendChild(text)
+                docxR.appendChild(docxT)
+                docxP.appendChild(docxR)
+                docxCell.appendChild(docxP)
+                docxRow.appendChild(docxCell)
+            docxTable.appendChild(docxRow)
+        
+        self.docxBody.appendChild(docxTable)

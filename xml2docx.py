@@ -69,7 +69,40 @@ class xmlWriter:
 		# As parseText() is the same  for front and body elements 
 		if style is not None and style == "Abstract":
 			self.abstract.append(textValue)
+
+	def newTable(self, table):
 		pass
+			  
+class tableTable:
+	name = None
+	rows = []
+
+	def __init__(self, name = None):
+		self.name = name
+		self.rows = []
+
+	def addRow(self, row):
+		self.rows.append(row)
+
+	def setName(self, name):
+		self.name = name
+
+class tableRow:
+	cells = []
+	rowType = None # thead, tbody, tfoot
+
+	def __init__(self, rowType):
+		self.cells = []
+		self.rowType = rowType
+
+	def addCell(self, cell):
+		self.cells.append(cell)
+		
+class tableCell:
+	text = None
+
+	def __init__(self, text = None):
+		self.text = text
 
 # For debugging purpose
 def printTree(front):
@@ -594,6 +627,8 @@ def parseSection(elem, headingDepth):
 			parseText(child, style = None)
 		elif child.nodeName == 'seriesInfo':
 			parseSeriesInfo(child)
+		elif child.nodeName == 'table':
+			parseTable(child)
 		elif child.nodeName == 'texttable':
 			parseTextTable(child)
 		elif child.nodeName == 'title':
@@ -688,12 +723,37 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 
+def parseTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.54
+	thisTable = tableTable()
+	for child in elem.childNodes:
+		if child.nodeType != Node.ELEMENT_NODE:
+			continue
+		elif child.nodeName in ['thead', 'tbody', 'tfoot']:
+			# Let's process the header row
+			for row in child.childNodes:
+				if row.nodeType != Node.ELEMENT_NODE:
+					continue
+				thisRow = tableRow(rowType = child.nodeName)  # rowType is 'thead', 'tbody' or 'tfoot'
+				if row.nodeName == 'tr':
+					for cell in row.childNodes:
+						if cell.nodeType != Node.ELEMENT_NODE:
+							continue
+						if cell.nodeName in ['td', 'th']:  # td is a table data cell, th is a table header cell
+							thisRow.addCell(tableCell(cell.childNodes[0].nodeValue))
+						else:
+							print('!!!! parseTable unexpected header cell: ', cell.nodeName)
+				thisTable.addRow(thisRow)
+		elif child.nodeName == 'name':
+			thisTable.setName(child.childNodes[0].nodeValue)
+		else:
+			print('!!!! parseTable unexpected child: ', child.nodeName)
+	writer.newTable(thisTable)  # Let's write the table to the document
+
 def parseTextTable(elem):
 	print('Skipping TextTable')
 	writer.newParagraph('... a TextTable was not imported...', justification = 'center')
 	
 def parseTitle(elem):
-	
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
