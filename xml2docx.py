@@ -388,10 +388,11 @@ def parseReference(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.4
 	else:
 		print('!!!! parseReference, missing anchor attribute')
 		text = ''
+	# <seriesInfo name="RFC" value="8174"/>
 	seriesInfoText = ''
 	for serieInfo in elem.getElementsByTagName('seriesInfo'):
 		if serieInfo.hasAttribute('name') and serieInfo.hasAttribute('value'):
-			if serieInfo.getAttribute('value') == '': # Sometimes the value field is empty... no need to add a useless space
+			if serieInfo.getAttribute('value') != '': # Sometimes the value field is empty... no need to add a useless space
 				seriesInfoText += serieInfo.getAttribute('name') + ' ' + serieInfo.getAttribute('value') + ', '
 			else:
 				seriesInfoText += serieInfo.getAttribute('name') + ', '
