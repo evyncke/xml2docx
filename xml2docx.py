@@ -92,9 +92,6 @@ def printTree(front):
 				print("\t\tTEXT: ", child.nodeValue)
 	print("\n----------\n")
 
-def docxNewParagraph(textValue, style = 'Normal', justification = None, unnumbered = None, numberingID = None, indentationLevel = None, removeEmpty = True, language = 'en-US', cdataSection = None):
-	return writer.newParagraph(textValue, style, justification, unnumbered, numberingID, indentationLevel, removeEmpty, language, cdataSection)
-
 libsTable = { 
 	'RFC': 'https://www.rfc-editor.org/refs/bibxml/',
 	'I-D': 'http://xml2rfc.ietf.org/public/rfc/bibxml3/',
