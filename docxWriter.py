@@ -76,9 +76,9 @@ class docxWriter(xmlWriter):
     
     def setMetaData(self, slug, value):
         super().setMetaData(slug, value)
-        if not (slug in ['authors', 'title']):
+        if not (slug in ['authors', 'date', 'seriesinfo', 'title']):
             self.newParagraph(slug.title() + ': ' + value)
-        if slug == 'authors':
+        if slug in ['authors', 'date', 'seriesinfo']:
             self.newParagraph(value, justification= 'right')
 
     def _generateDocPropsCore(self):
@@ -90,20 +90,21 @@ class docxWriter(xmlWriter):
                 creatorElem.removeChild(child)
             text = xmlcore.createTextNode(', '.join(self.getMetaData('authors')))
             creatorElem.appendChild(text)
-        if self.getMetaData('date') != None:
+        if self.getMetaData('date') is not None:
             createdElem = xmlcore.getElementsByTagName('dcterms:created')[0]
             for child in createdElem.childNodes:
                 createdElem.removeChild(child)
-            createdDate = myParseDate(self.getMetaData('date'))	
-            text = xmlcore.createTextNode(createdDate.strftime('%Y-%m-%dT%H:%M:%SZ'))
-            createdElem.appendChild(text)
-        if self.getMetaData('keywords') != None:
+            if self.getMetaData('date') is not None:
+                createdDate = myParseDate(self.getMetaData('date')[0]) # Normaly only one date	
+                text = xmlcore.createTextNode(createdDate.strftime('%Y-%m-%dT%H:%M:%SZ'))
+                createdElem.appendChild(text)
+        if self.getMetaData('keywords') is not None:
             keywordsElem = xmlcore.getElementsByTagName('cp:keywords')[0]
             for child in keywordsElem.childNodes:
                 keywordsElem.removeChild(child)
             text = xmlcore.createTextNode(', '.join(self.getMetaData('keywords')))
             keywordsElem.appendChild(text)
-        if self.getMetaData('title') != None:
+        if self.getMetaData('title') is not None:
             titleElem = xmlcore.getElementsByTagName('dc:title')[0]
             for child in titleElem.childNodes:
                 titleElem.removeChild(child)
@@ -154,9 +155,9 @@ class docxWriter(xmlWriter):
         
         self.docxBody.appendChild(sectPrElem)
 
-        if self.templateDirectory == None: 
+        if self.templateDirectory is None: 
             self.templateDirectory = os.path.dirname(os.path.abspath(sys.argv[0])) + '/template' # default template is in the executable directory
-        if self.openXML == None:
+        if self.openXML is None:
             self.openXML = self.templateDirectory + '/word/document.xml'
 
         docxFile = io.open(self.openXML, 'w', encoding="'utf8'")
@@ -183,7 +184,7 @@ class docxWriter(xmlWriter):
 				  language = 'en-US', cdataSection = None):
         if textValue is None:
             return None
-        if cdataSection == None:  # remove extra spaces only if CDATA is not requested
+        if cdataSection is None:  # remove extra spaces only if CDATA is not requested
             textValue = ' '.join(textValue.split())
         if textValue == '' and removeEmpty:
             return None
@@ -249,7 +250,7 @@ class docxWriter(xmlWriter):
             rPr.appendChild(rStyle)
         r.appendChild(rPr)
         t = self.docxRoot.createElement('w:t')
-        if cdataSection == None:
+        if cdataSection is None:
             text = self.docxRoot.createTextNode(textValue)
         else:
             t.setAttribute('xml:space', 'preserve')
@@ -259,7 +260,6 @@ class docxWriter(xmlWriter):
         r.appendChild(t) 
         docxP.appendChild(r)
         self.docxBody.appendChild(docxP)
-
 
     def newTable(self, table):
         docxTable = self.docxRoot.createElement('w:tbl')

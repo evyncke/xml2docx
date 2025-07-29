@@ -67,6 +67,9 @@ class xmlWriter:
 		else:
 			self.metaData[slug] = [value]
 
+# TODO: this does not allow for parts of the text being in italics or bold...
+# => should use run elements notably in the docxWriter with <w:r> children inside a <w:p> element
+# then update the parsiing of the text to handle the <tt>, <em> and <b> tags 
 	def newParagraph(self, textValue, style = 'Normal', justification = None, unnumbered = None, 
 				  numberingID = None, indentationLevel = None, removeEmpty = True, 
 				  language = 'en-US', cdataSection = None):
@@ -268,13 +271,12 @@ def parseDate(elem):
 	if elem.hasAttribute('year'):
 		dateString = dateString + elem.getAttribute('year')
 	if dateString != '':
-		writer.newParagraph(dateString, justification = 'right')
-		writer.rfcDate = dateString
+		writer.setMetaData('date', dateString)
 	
 def parseDisplayReference(elem): # https://tools.ietf.org/html/rfc7991#section-2.19
 	# Presentation only... skipping it for now
+	print("parseDisplayReference not yet implemented")
 	return
-#	print("parseDisplayReference not yet implemented")
 	
 def parseDList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.20 
 	for child in elem.childNodes:
@@ -452,7 +454,7 @@ def parseReference(elem, isNormative = False, isSubReference = False):  # See ht
 		if serieInfo.hasAttribute('name') and serieInfo.hasAttribute('value'):
 			if serieInfo.getAttribute('value') != '': # Sometimes the value field is empty... no need to add a useless space
 				seriesInfoText += serieInfo.getAttribute('name') + ' ' + serieInfo.getAttribute('value') + ', '
-				if serieInfo.getAttribute('name') in ('RFC', 'STD', 'BCP', 'FYI'):
+				if serieInfo.getAttribute('name') in ('RFC', 'STD', 'BCP', 'FYI') and not isSubReference:
 					if isNormative:
 						writer.normativeReferences.append(serieInfo.getAttribute('name') + serieInfo.getAttribute('value'))
 					else:
@@ -524,7 +526,7 @@ def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc79
 				sectionTitle = nameChild[0].childNodes[0].nodeValue
 		else:
 			print('??? parseReferences: this references section has not title...')
-	isNormative = (sectionTitle is not None and sectionTitle.startswith('Normative References'))
+	isNormative = (sectionTitle is not None and sectionTitle.startswith('Normative Reference'))
 	if sectionTitle != None:
 		writer.newParagraph(sectionTitle, 'Heading' + str(headingLevel), unnumbered = None)
 	for child in elem.childNodes:
@@ -655,8 +657,7 @@ def parseSeriesInfo(elem):
 	if elem.hasAttribute('stream'):
 		seriesInfoString = seriesInfoString + ' (stream: ' + elem.getAttribute('stream') + ')'
 	if seriesInfoString != '':
-		writer.newParagraph(seriesInfoString, justification = 'right')
-
+		writer.setMetaData('seriesinfo', seriesInfoString)
 		
 def parseText(elem, style = None, numberingID = None, indentationLevel = None, Verbose = None):  # See https://tools.ietf.org/html/rfc7991#section-2.53
 	if Verbose:
@@ -716,8 +717,14 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 			elif text.nodeName == 'xref':
 				textValue = textValue + parseXref(text)
 			elif text.nodeName == 'tt': # Fixed font
+				# TODO should the concept of 'run' rather than 'paragraph' be used here 
 				# textValue = textValue + parseText(text, style = 'Code', numberingID = None, indentationLevel = None, Verbose = True)
-				parseText(text, style = 'Code', numberingID = None, indentationLevel = None)
+				# old parseText(text, style = 'Code', numberingID = None, indentationLevel = None)
+				for child in text.childNodes:
+					if child.nodeType == Node.TEXT_NODE:
+						textValue += child.nodeValue
+					elif child.nodeType == Node.ELEMENT_NODE:
+						print('!!!!! parseText: Text inside tt element is ELEMENT_NODE: ', child.nodeName)
 #			elif text.nodeName == 'em': # italics font
 #				textValue = textValue + parseText(text, style = 'Emphasis', numberingID = None, indentationLevel = None)
 			elif text.nodeName != '#text' and text.nodeName != '#comment':
@@ -806,14 +813,14 @@ def parseUList(elem):
 			print('!!!! Unexpected List child: ', child.nodeName)
 
 def parseWorkgroup(elem):
-	textValue = 'Workgroup: '
+	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseWorkgroup: Text is ELEMENT_NODE: ', text.nodeName)
-	writer.newParagraph(textValue)
+	writer.setMetaData('workgroup', textValue)
 
 def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 	if elem.nodeValue != None:
@@ -857,7 +864,6 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	parseSection(middle, 0)
 	writer.inMiddle = False
 	parseBack(back)
-	
 
 def myParseDate(s):
 	try:
