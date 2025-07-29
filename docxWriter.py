@@ -78,6 +78,8 @@ class docxWriter(xmlWriter):
         super().setMetaData(slug, value)
         if not (slug in ['authors', 'title']):
             self.newParagraph(slug.title() + ': ' + value)
+        if slug == 'authors':
+            self.newParagraph(value, justification= 'right')
 
     def _generateDocPropsCore(self):
         xmlcore = minidom.parse(self.templateDirectory + '/docProps/core.xml')

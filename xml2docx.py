@@ -18,6 +18,7 @@
 # XML2RFC is in
 # https://datatracker.ietf.org/doc/html/rfc7998 "xml2rfc" Version 3 Preparation Tool Description
 # https://datatracker.ietf.org/doc/rfc7991/ The "xml2rfc" Version 3 Vocabulary
+# https://datatracker.ietf.org/doc/html/rfc7749 "The XML2RFC Version 2"
 # TODO
 # Handle external entities used notably for references...
 # https://www.w3schools.com/xml/xml_dtd_entities.asp
@@ -35,7 +36,8 @@ import os
 
 import datetime
 import urllib.request
-import docxWriter
+# import docxWriter
+# import mdWriter
 
 class xmlWriter:
 	# Same states to be kept
@@ -44,9 +46,11 @@ class xmlWriter:
 	normativeReferences = []  # A list of normative references
 	informativeReferences = []  # A list of informative references
 	filename = None  # The filename of the to-be-created file
+	inMiddle = True  # True if we are in the middle part of the document, False if in the back part
 
 	def __init__(self, filename = None):
 		self.filename = filename
+		self.inMiddle = True  # Start in the middle part
 
 	def save(self):
 		pass
@@ -168,14 +172,14 @@ def parseAbstract(elem):
 			print('Unexpected tagName in Abstract: ', child.nodeName)
 
 def parseArea(elem):
-	textValue = 'Area: '
+	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
 			textValue += text.nodeValue
 		if elem.nodeType == Node.ELEMENT_NODE:
 			if text.nodeName != '#text':
 				print('!!!!! parseArea: Text is ELEMENT_NODE: ', text.nodeName)
-	writer.newParagraph(textValue)
+	writer.setMetaData('area', textValue)
 
 def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
 	# If there is no type attribute, let's process the element
@@ -203,10 +207,8 @@ def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 					organization = ', ' + grandchild.nodeValue
 
 	if elem.hasAttribute('asciiFullname'):
-		writer.newParagraph(elem.getAttribute('asciiFullname') + organization, justification = 'right')
 		writer.setMetaData('authors', elem.getAttribute('asciiFullname') + organization)
 	elif elem.hasAttribute('fullname'):
-		writer.newParagraph(elem.getAttribute('fullname') + organization, justification = 'right')
 		writer.setMetaData('authors', elem.getAttribute('fullname') + organization)
 	else:
 		author = ''
@@ -215,7 +217,6 @@ def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 		if elem.hasAttribute('surname'):
 			author = author + elem.getAttribute('surname')
 		if author != '':
-			writer.newParagraph(author + organization, justification = 'right')
 			writer.setMetaData('authors', author + organization)
 
 def parseBack(elem): # https://tools.ietf.org/html/rfc7991#section-2.8
@@ -777,7 +778,7 @@ def parseTextTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.5
 			thisRow.addCell(tableCell(child.childNodes[0].nodeValue))
 			cellIndex += 1
 		elif child.nodeName == 'postamble':
-			postAmble = child.childNodes[0].nodeValue)
+			postAmble = child.childNodes[0].nodeValue
 		else:
 			print('!!!! parseTextTable unexpected child: ', child.nodeName)
 	thisTable.addRow(thisRow) # optimistic...
@@ -827,7 +828,6 @@ def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 			return child.nodeValue
 		print('!!!! parseXref, unexpected child.nodeName: ' + child.nodeName)	# Only text is allowed
 							
-
 def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	global xmldoc
 	global docxRoot, docxBody, docxDocument
@@ -853,7 +853,9 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 
 	parseRfc(rfc)
 	parseSection(front, 0)
+	writer.inMiddle = True
 	parseSection(middle, 0)
+	writer.inMiddle = False
 	parseBack(back)
 	
 
@@ -874,14 +876,15 @@ if __name__ == '__main__':
 	outFilename = None
 	templateDirectory = None
 	docxFilename = None
+	mdFilename = None
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],"d:hi:o:t:",["ifile=","ofile=","template=", "docx="])
+		opts, args = getopt.getopt(sys.argv[1:],"d:hi:m:o:t:",["ifile=","ofile=","template=", "docx=", "marldown="])
 	except getopt.GetoptError:
-		print('xml2docx.py -i <inputfile> -o <outputfile>')
+		print('xml2docx.py -i <inputfile> -o <outputXMLfile>')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print('xml2docx.py -i <inputfile/draft-name> [-o <outputfile>] [--docx <result.docx>]')
+			print('xml2docx.py -i <inputfile/draft-name> [-o <outputXMLfile>] [--docx <result.docx>] [--md <markdown.md]')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inFilename = arg
@@ -891,24 +894,34 @@ if __name__ == '__main__':
 			templateDirectory = arg
 		elif opt in ("-d", "--docx"):
 			docxFilename = arg
-	if inFilename == None:
+		elif opt in ("-m", "--md"):
+			mdFilename = arg	
+	if inFilename is None:
 		print('Missing input filename')
 		sys.exit(2)
 
-	if outFilename == None:
-		if docxFilename != None:
+	if outFilename is None and mdFilename is None:
+		if docxFilename is not None:
 			outFilename = templateDirectory + '/word/document.xml'
 		else:
 			outFilename = 'xml2docx.xml'
-	if docxFilename == None:
+
+	# OpenXML docx is the preferred output format when no output file is specified
+	if docxFilename is None and mdFilename is None:
 		if inFilename[-4:] == '.xml':
 			docxFilename = inFilename.replace('.xml', '.docx')
 		else:
 			docxFilename = inFilename + '.docx'
-
-	# Assuming DOCX write from now		
-	writer = docxWriter.docxWriter(docxFilename)
-	writer.templateDirectory = templateDirectory
+	if docxFilename is not None:
+		import docxWriter
+		writer = docxWriter.docxWriter(docxFilename)
+		writer.templateDirectory = templateDirectory
+	elif mdFilename is not None:
+		import mdWriter
+		writer = mdWriter.mdWriter(mdFilename)
+	else:
+		print('Neither docx nor markdown output file specified')
+		sys.exit(2)
 
 	# Let's generate the openXML word processing 'document.xml' file
 	processXML(inFilename, outFilename)

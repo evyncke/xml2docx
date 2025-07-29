@@ -1,13 +1,10 @@
 header.inc
 sample
-draft-ietf-intarea-provisioning-domains-00.xml
 draft-*.xml
-sample.docx
 sample_document.xml
-test.docx
-~$*.docx
 document.xml
 xml2doc.xml
 *.docx
+*.md
 xml2docx.xml
 rfc*.xml
