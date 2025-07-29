@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
    
-# A lot of information in http://officeopenxml.com/anatomyofOOXML.php
+# A lot of information in https://github.com/cabo/kramdown-rfc/wiki/Syntax2 
 
 from xml2docx import xmlWriter
 import textwrap
@@ -64,6 +64,7 @@ class mdWriter(xmlWriter):
 
     def save(self): 
         super().save()
+        print('Generating kramdown file', self.filename)
         with open(self.filename, 'w', encoding='utf-8') as f:
             self._saveFront(f)
             for paragraph in self.mdMiddleText:
