@@ -68,12 +68,14 @@ class mdWriter(xmlWriter):
         with open(self.filename, 'w', encoding='utf-8') as f:
             self._saveFront(f)
             for paragraph in self.mdMiddleText:
-                f.write(textwrap.fill(paragraph, width=80))
-                f.write('\n\n')  # Add two new lines between paragraphs
+                f.write(textwrap.fill(paragraph, width=72))
+                if paragraph.endswith('\n'):
+                    f.write('\n')  # as textwrap.fill remove the trailing new line if any (e.g., tables/figures do not have a trailing new line)
+                f.write('\n')  # Add one new line between paragraphs (not the newParagraph also adds a new line but not newTable)
             f.write('\n--- back\n\n')
             for paragraph in self.mdBackText:
-                f.write(textwrap.fill(paragraph, width=80))
-                f.write('\n\n')
+                f.write(textwrap.fill(paragraph, width=72))
+                f.write('\n')
 
     def newParagraph(self, textValue, style = 'Normal', justification = None, unnumbered = None, 
 				  numberingID = None, indentationLevel = None, removeEmpty = True, 
@@ -106,9 +108,34 @@ class mdWriter(xmlWriter):
                 if 1 <= level <= 6:
                     textValue = '#' * level + ' ' + textValue
         if self.inMiddle:
-            self.mdMiddleText.append(textValue)
+            self.mdMiddleText.append(textValue + '\n')
         else:
-            self.mdBackText.append(textValue)
+            self.mdBackText.append(textValue + '\n')
 
     def newTable(self, table):
-        pass
+        needHeaderSeparator = False
+        for row in table.rows:
+            if row.rowType == 'thead': 
+                # Add a header row
+                textValue = "| " + " | ".join([cell.text for cell in row.cells]) + " |"
+                needHeaderSeparator = True
+            elif row.rowType in ['tbody', 'tfoot']:  # markdown does not have a tfoot
+                if needHeaderSeparator:
+                    # Add a separator row
+                    textValue = "| " + " | ".join(['---'] * len(row.cells)) + " |"
+                    if self.inMiddle:
+                        self.mdMiddleText.append(textValue)
+                    else:
+                        self.mdBackText.append(textValue)
+                    needHeaderSeparator = False
+                # Add a body row
+                textValue = "| " + " | ".join([cell.text for cell in row.cells]) + " |"
+            else: 
+                print('newTable: rowType not handled:', row.rowType)
+            if self.inMiddle:
+                self.mdMiddleText.append(textValue)
+            else:
+                self.mdBackText.append(textValue)
+        # Write the table caption if any
+        if table.name:
+            self.newParagraph(table.name, style = 'Caption', justification = 'center')
