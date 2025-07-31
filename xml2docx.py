@@ -79,6 +79,9 @@ class xmlWriter:
 
 	def newTable(self, table):
 		pass
+
+	def newFigure(self, figure):
+		pass
 			  
 class tableTable:
 	name = None
@@ -110,6 +113,20 @@ class tableCell:
 
 	def __init__(self, text = None):
 		self.text = text
+
+class figureFigure:
+	name = None
+	rows = []
+
+	def __init__(self, name = None):
+		self.name = name
+		self.rows = []
+
+	def addRow(self, row):
+		self.rows.append(row)
+
+	def setName(self, name):
+		self.name = name
 
 # For debugging purpose
 def printTree(front):
@@ -184,7 +201,7 @@ def parseArea(elem):
 				print('!!!!! parseArea: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.setMetaData('area', textValue)
 
-def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
+def parseArtWork(elem, figure):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
 	# If there is no type attribute, let's process the element
 	# If there is a type attribute, let's process the element only if type == ascii-art
 	if (not elem.hasAttribute('type')) or (elem.hasAttribute('type') and (elem.getAttribute('type') == 'ascii-art' or elem.getAttribute('type') == '')):
@@ -194,7 +211,7 @@ def parseArtWork(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2
 			figureLines += text
 		# Let's split this string into lines and print each line
 		for line in figureLines.splitlines():
-			writer.newParagraph(line.rstrip(" \t"), style = 'Code', removeEmpty = False, language = None, cdataSection = True)
+			figure.addRow(line.rstrip(" \t"))  # Remove trailing spaces and tabs
 
 def parseAuthor(elem):	# Per https://tools.ietf.org/html/rfc7991#section-2.7
 	global writer
@@ -316,12 +333,13 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
 			preamble = preambleChildren[0].childNodes[0].nodeValue
 			writer.newParagraph(preamble)
+	figure = figureFigure()
 	# Let's process a single artwork
 	artworkChildren = elem.getElementsByTagName('artwork')
 	for child in artworkChildren:
-		parseArtWork(child)
+		parseArtWork(child, figure)
 	# Let's process the source code
-	
+	# EVY todo....
 	# Could have a title attribute rather than the name element (same as in section)
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
@@ -334,7 +352,8 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 			if nameChild[0].nodeType == Node.ELEMENT_NODE:
 				figureTitle = nameChild[0].childNodes[0].nodeValue
 	if figureTitle != None:
-		writer.newParagraph('Figure: ' + figureTitle, justification = 'center')
+		figure.setName(figureTitle)
+	writer.newFigure(figure)  # Let the writer handle the figure
 	# Figure had postamble (deprecated but let's process it)
 	postambleChildren = elem.getElementsByTagName('postamble')
 	if postambleChildren.length > 0  and postambleChildren[0].childNodes.length > 0:

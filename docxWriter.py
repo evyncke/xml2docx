@@ -29,6 +29,7 @@ class docxWriter(xmlWriter):
     openXML = None  # file path for the core OpenXML document
     docxBody = None
     docxDocument = None
+    figureIndex = 1  # Used to generate unique figure names
 
     def __init__(self, filename = None):
         super().__init__(filename)
@@ -294,3 +295,11 @@ class docxWriter(xmlWriter):
         # Write the table caption if any
         if table.name:
             self.newParagraph(table.name, style = 'Caption', justification = 'center')
+
+    def newFigure(self, figure):
+        for row in figure.rows:
+            self.newParagraph(row, style = 'Code', removeEmpty = False, language = None, cdataSection = True)
+        # Write the table caption if any
+        if figure.name:
+            self.newParagraph('Figure ' + str(self.figureIndex) +  ' : ' + figure.name, style = 'Caption', justification = 'center')
+        self.figureIndex += 1

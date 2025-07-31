@@ -139,3 +139,26 @@ class mdWriter(xmlWriter):
         # Write the table caption if any
         if table.name:
             self.newParagraph(table.name, style = 'Caption', justification = 'center')
+
+    def newFigure(self, figure):
+        if self.inMiddle:
+            self.mdMiddleText.append('{:fig: artwork-align="center"}')
+            self.mdMiddleText.append('~~~~')
+        else:
+            self.mdBackText.append('{:fig: artwork-align="center"}')
+            self.mdBackText.append('~~~~')
+        for row in figure.rows:
+            if self.inMiddle:
+                self.mdMiddleText.append(row)
+            else:
+                self.mdBackText.append(row)
+        # Write the table caption if any
+        if self.inMiddle:
+            self.mdMiddleText.append('~~~~')
+        else:
+            self.mdBackText.append('~~~~')
+        if figure.name:
+            if self.inMiddle:
+                self.mdMiddleText.append('{:fig title="' + figure.name + '"}')
+            else:
+                self.mdBackText.append('{:fig title="' + figure.name + '"}')
