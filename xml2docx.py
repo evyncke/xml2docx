@@ -33,6 +33,7 @@ import xml.dom
 from pprint import pprint
 import sys, getopt
 import os
+from typing import Optional, List, Dict, Union, Any
 
 import datetime
 import urllib.request
@@ -48,20 +49,20 @@ class xmlWriter:
 	filename = None  # The filename of the to-be-created file
 	inMiddle = True  # True if we are in the middle part of the document, False if in the back part
 
-	def __init__(self, filename = None):
+	def __init__(self, filename: Optional[str] = None) -> None:
 		self.filename = filename
 		self.inMiddle = True  # Start in the middle part
 
-	def save(self):
+	def save(self) -> None:
 		pass
 
-	def getMetaData(self, slug):
+	def getMetaData(self, slug: str) -> Optional[List[str]]:
 		if slug in self.metaData:
 			return self.metaData[slug]
 		else:
 			return None
 	
-	def setMetaData(self, slug, value):
+	def setMetaData(self, slug: str, value: str) -> None:
 		if slug in self.metaData:
 			self.metaData[slug].append(value)
 		else:
@@ -70,66 +71,73 @@ class xmlWriter:
 # TODO: this does not allow for parts of the text being in italics or bold...
 # => should use run elements notably in the docxWriter with <w:r> children inside a <w:p> element
 # then update the parsiing of the text to handle the <tt>, <em> and <b> tags 
-	def newParagraph(self, textValue, style = 'Normal', justification = None, unnumbered = None, 
-				  numberingID = None, indentationLevel = None, removeEmpty = True, 
-				  language = 'en-US', cdataSection = None):
+	def newParagraph(self, 
+				  textValue: str,
+				  style: str = 'Normal',
+				  justification: Optional[str] = None,
+				  unnumbered: Optional[bool] = None,
+				  numberingID: Optional[str] = None,
+				  indentationLevel: Optional[str] = None,
+				  removeEmpty: bool = True,
+				  language: str = 'en-US',
+				  cdataSection: Optional[bool] = None) -> None:
 		# As parseText() is the same  for front and body elements 
 		if style is not None and style == "Abstract":
 			self.abstract.append(textValue)
 
-	def newTable(self, table):
+	def newTable(self, table: 'tableTable') -> None:
 		pass
 
-	def newFigure(self, figure):
+	def newFigure(self, figure: 'figureFigure') -> None:
 		pass
 			  
 class tableTable:
-	name = None
-	rows = []
+	name: Optional[str] = None
+	rows: List['tableRow'] = []
 
-	def __init__(self, name = None):
+	def __init__(self, name: Optional[str] = None) -> None:
 		self.name = name
 		self.rows = []
 
-	def addRow(self, row):
+	def addRow(self, row: 'tableRow') -> None:
 		self.rows.append(row)
 
-	def setName(self, name):
+	def setName(self, name: str) -> None:
 		self.name = name
 
 class tableRow:
-	cells = []
-	rowType = None # thead, tbody, tfoot
+	cells: List['tableCell'] = []
+	rowType: Optional[str] = None  # thead, tbody, tfoot
 
-	def __init__(self, rowType):
+	def __init__(self, rowType: str) -> None:
 		self.cells = []
 		self.rowType = rowType
 
-	def addCell(self, cell):
+	def addCell(self, cell: 'tableCell') -> None:
 		self.cells.append(cell)
 		
 class tableCell:
-	text = None
+	text: Optional[str] = None
 
-	def __init__(self, text = None):
+	def __init__(self, text: Optional[str] = None) -> None:
 		self.text = text
 
 class figureFigure:
-	name = None
-	rows = []
+	name: Optional[str] = None
+	rows: List[str] = []
 
-	def __init__(self, name = None):
+	def __init__(self, name: Optional[str] = None) -> None:
 		self.name = name
 		self.rows = []
 
-	def addRow(self, row):
+	def addRow(self, row: str) -> None:
 		self.rows.append(row)
 
-	def setName(self, name):
+	def setName(self, name: str) -> None:
 		self.name = name
 
 # For debugging purpose
-def printTree(front):
+def printTree(front: xml.dom.minidom.Element) -> None:
 	print('All children:')
 	for elem in front.childNodes:
 		if elem.nodeType == Node.TEXT_NODE:
@@ -161,7 +169,7 @@ libsTable = {
 	'STD': 'http://xml2rfc.ietf.org/public/rfc/bibxml9/',
 }
 
-def includeExternal(referenceName):
+def includeExternal(referenceName: str) -> Optional[xml.dom.minidom.Element]:
 	global libsTable
 	
 	referenceTokens = referenceName.split('.')
@@ -182,7 +190,7 @@ def includeExternal(referenceName):
 	print("Reference type " + referenceTokens[1] + " not supported...")
 	return None
 	
-def parseAbstract(elem):
+def parseAbstract(elem: xml.dom.minidom.Element) -> None:
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
@@ -191,7 +199,7 @@ def parseAbstract(elem):
 		else:
 			print('Unexpected tagName in Abstract: ', child.nodeName)
 
-def parseArea(elem):
+def parseArea(elem: xml.dom.minidom.Element) -> None:
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
@@ -201,7 +209,7 @@ def parseArea(elem):
 				print('!!!!! parseArea: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.setMetaData('area', textValue)
 
-def parseArtWork(elem, figure):	# See also https://tools.ietf.org/html/rfc7991#section-2.5
+def parseArtWork(elem: xml.dom.minidom.Element, figure: figureFigure) -> None:	# See also https://tools.ietf.org/html/rfc7991#section-2.5
 	# If there is no type attribute, let's process the element
 	# If there is a type attribute, let's process the element only if type == ascii-art
 	if (not elem.hasAttribute('type')) or (elem.hasAttribute('type') and (elem.getAttribute('type') == 'ascii-art' or elem.getAttribute('type') == '')):
@@ -254,7 +262,7 @@ def parseBack(elem): # https://tools.ietf.org/html/rfc7991#section-2.8
 		else:
 			print('!!!! parseBack: unexpected nodeName: ' + child.nodeName)
 
-def parseBcp14(elem):  # https://tools.ietf.org/html/rfc7991#section-2.9 only text
+def parseBcp14(elem: xml.dom.minidom.Element) -> Optional[str]:  # https://tools.ietf.org/html/rfc7991#section-2.9 only text
 	if elem.nodeValue != None:
 		print('Bcp14 nodeValue: ' , elem.nodeValue)
 	if elem.nodeType == Node.TEXT_NODE:
@@ -277,7 +285,7 @@ def parseBoilerPlate(elem):
 		else:
 			print('Unexpected tagName in BoilerPlate: ', child.nodeName)
 
-def parseDate(elem):
+def parseDate(elem: xml.dom.minidom.Element) -> None:
 	global writer
 	
 	dateString = ''
@@ -295,7 +303,7 @@ def parseDisplayReference(elem): # https://tools.ietf.org/html/rfc7991#section-2
 	print("parseDisplayReference not yet implemented")
 	return
 	
-def parseDList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.20 
+def parseDList(elem: xml.dom.minidom.Element) -> None:  # See also https://tools.ietf.org/html/rfc7991#section-2.20 
 	for child in elem.childNodes:
 	# If should be a serie of DT DD elements in the right order, the code is not resilient to out of order
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -311,7 +319,7 @@ def parseDList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.
 			print('!!!! parseDList, unexpected child: ', child.nodeName)
 
 # TODO switch off language to avoid wrong typos ?
-def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
+def parseEref(elem: xml.dom.minidom.Element) -> Optional[str]:	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 	if elem.nodeValue != None:
 		print('Eref nodeValue: ' , elem.nodeValue)
 	if elem.hasAttribute('target'):	# one and only mandatory attribute
@@ -326,7 +334,7 @@ def parseEref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.24
 			print("parseEref recurse into t !!!")
 			parseText(child)
 
-def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
+def parseFigure(elem: xml.dom.minidom.Element) -> None: # See https://tools.ietf.org/html/rfc7991#section-2.25
 	# Figure had preamble (deprecated but let's process it)
 	preambleChildren = elem.getElementsByTagName('preamble')
 	if preambleChildren.length > 0 and preambleChildren[0].childNodes.length > 0:
@@ -361,7 +369,7 @@ def parseFigure(elem): # See https://tools.ietf.org/html/rfc7991#section-2.25
 			postamble = postambleChildren[0].childNodes[0].nodeValue
 			writer.newParagraph(postamble)
 	
-def parseKeyword(elem):
+def parseKeyword(elem: xml.dom.minidom.Element) -> None:
 	
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
@@ -370,7 +378,7 @@ def parseKeyword(elem):
 			if text.nodeName != '#text':
 				print('!!!!! parseKeyword: Text is ELEMENT_NODE: ', text.nodeName)
 
-def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.29
+def parseList(elem: xml.dom.minidom.Element) -> None:  # See also https://tools.ietf.org/html/rfc7991#section-2.29
 	for child in elem.childNodes:
 		if child.nodeType == Node.COMMENT_NODE:
 			continue
@@ -387,7 +395,10 @@ def parseList(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.2
 		else:
 			print('!!!! parseList, unexpected child: ', child.nodeName)
 		
-def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentationLevel = None):
+def parseListItem(elem: xml.dom.minidom.Element, 
+              style: str = 'ListParagraph', 
+              numberingID: Optional[str] = None, 
+              indentationLevel: Optional[str] = None) -> None:
 	for i in range(elem.attributes.length):
 		attrib = elem.attributes.item(i)
 		if attrib.name == 'pn' or  attrib.name == 'anchor' or  attrib.name == 'derivedCounter': 	# Let's ignore this marking as no obvious requirement or support in Office OpenXML
@@ -421,11 +432,11 @@ def parseListItem(elem, style = 'ListParagraph', numberingID = None, indentation
 #				print('parseListItem ignoring Text is ELEMENT_NODE: ', text.nodeName)
 	writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 
-def parseNote(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.33
+def parseNote(elem: xml.dom.minidom.Element) -> None:  # See https://tools.ietf.org/html/rfc7991#section-2.33
 	print("<note> is an unsupported tag")
 	
 # TODO should reset the numbering to 1... cfr draft-ietf-anima-autonomic-control-plane-29.xml
-def parseOList(elem):
+def parseOList(elem: xml.dom.minidom.Element) -> None:
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
@@ -434,7 +445,7 @@ def parseOList(elem):
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 
-def parseReferenceGroup(elem, isNormative = False):  # See https://tools.ietf.org/html/rfc7991#section-2.40
+def parseReferenceGroup(elem: xml.dom.minidom.Element, isNormative: bool = False) -> None:  # See https://tools.ietf.org/html/rfc7991#section-2.40
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	if elem.hasAttribute('anchor'):
@@ -459,7 +470,9 @@ def parseReferenceGroup(elem, isNormative = False):  # See https://tools.ietf.or
 		else:
 			print('!!!! Unexpected ReferenceGroup child: ', child.nodeName)
 
-def parseReference(elem, isNormative = False, isSubReference = False):  # See https://tools.ietf.org/html/rfc7991#section-2.40
+def parseReference(elem: xml.dom.minidom.Element, 
+               isNormative: bool = False, 
+               isSubReference: bool = False) -> None:  # See https://tools.ietf.org/html/rfc7991#section-2.40
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	if elem.hasAttribute('anchor'):
@@ -591,7 +604,7 @@ def parseRfc(elem):  # See also https://tools.ietf.org/html/rfc7991#section-2.45
 		writer.setMetaData('updates', elem.getAttribute('updates'))
 		# docxBody.appendChild(docxNewParagraph('Updates: ' + elem.getAttribute('updates')))
 
-def parseSection(elem, headingDepth):
+def parseSection(elem: xml.dom.minidom.Element, headingDepth: int) -> None:
 	if elem.nodeType != Node.ELEMENT_NODE:
 		return
 	if elem.hasAttribute('numbered'):
@@ -678,7 +691,11 @@ def parseSeriesInfo(elem):
 	if seriesInfoString != '':
 		writer.setMetaData('seriesinfo', seriesInfoString)
 		
-def parseText(elem, style = None, numberingID = None, indentationLevel = None, Verbose = None):  # See https://tools.ietf.org/html/rfc7991#section-2.53
+def parseText(elem: xml.dom.minidom.Element, 
+           style: Optional[str] = None, 
+           numberingID: Optional[str] = None, 
+           indentationLevel: Optional[str] = None, 
+           Verbose: Optional[bool] = None) -> None:  # See https://tools.ietf.org/html/rfc7991#section-2.53
 	if Verbose:
 		print("parseText start: ", elem)
 	textValue = ''
@@ -750,7 +767,7 @@ def parseText(elem, style = None, numberingID = None, indentationLevel = None, V
 				print('!!!!! parseText: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.newParagraph(textValue, style = style, numberingID = numberingID, indentationLevel = indentationLevel)
 
-def parseTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.54
+def parseTable(elem: xml.dom.minidom.Element) -> None:  # See https://tools.ietf.org/html/rfc7991#section-2.54
 	thisTable = tableTable()
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
@@ -776,7 +793,7 @@ def parseTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.54
 			print('!!!! parseTable unexpected child: ', child.nodeName)
 	writer.newTable(thisTable)  # Let's write the table to the document
 
-def parseTextTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.55
+def parseTextTable(elem: xml.dom.minidom.Element) -> None:  # See https://tools.ietf.org/html/rfc7991#section-2.55
 	thisTable = tableTable()
 	if elem.getAttribute('title') is not None:
 		thisTable.setName(elem.getAttribute('title'))
@@ -814,7 +831,7 @@ def parseTextTable(elem):  # See https://tools.ietf.org/html/rfc7991#section-2.5
 	if postAmble is not None:
 		writer.newParagraph(postAmble) 
 	
-def parseTitle(elem):
+def parseTitle(elem: xml.dom.minidom.Element) -> None:
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
@@ -822,7 +839,7 @@ def parseTitle(elem):
 	writer.newParagraph(textValue, style = 'Title')
 	writer.setMetaData('title', textValue)
 
-def parseUList(elem):
+def parseUList(elem: xml.dom.minidom.Element) -> None:
 	for child in elem.childNodes:
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
@@ -831,7 +848,7 @@ def parseUList(elem):
 		else:
 			print('!!!! Unexpected List child: ', child.nodeName)
 
-def parseWorkgroup(elem):
+def parseWorkgroup(elem: xml.dom.minidom.Element) -> None:
 	textValue = ''
 	for text in elem.childNodes:
 		if text.nodeType == Node.TEXT_NODE:
@@ -841,7 +858,7 @@ def parseWorkgroup(elem):
 				print('!!!!! parseWorkgroup: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.setMetaData('workgroup', textValue)
 
-def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
+def parseXref(elem: xml.dom.minidom.Element) -> Optional[str]:	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 	if elem.nodeValue != None:
 		print('Xref nodeValue: ' , elem.nodeValue)
 	if elem.hasAttribute('target'):	# One and only mandatory attribute
@@ -854,7 +871,7 @@ def parseXref(elem):	# See also https://tools.ietf.org/html/rfc7991#section-2.66
 			return child.nodeValue
 		print('!!!! parseXref, unexpected child.nodeName: ' + child.nodeName)	# Only text is allowed
 							
-def processXML(inFilename, outFilename = 'xml2docx.xml'):
+def processXML(inFilename: str, outFilename: str = 'xml2docx.xml') -> None:
 	global xmldoc
 	global docxRoot, docxBody, docxDocument
 	
@@ -884,7 +901,7 @@ def processXML(inFilename, outFilename = 'xml2docx.xml'):
 	writer.inMiddle = False
 	parseBack(back)
 
-def myParseDate(s):
+def myParseDate(s: str) -> datetime.datetime:
 	try:
 		# Let's first try with short month names
 		date = datetime.datetime.strptime(s,'%d %b %Y')
