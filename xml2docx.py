@@ -637,7 +637,7 @@ def parseSection(elem: xml.dom.minidom.Element, headingDepth: int) -> None:
 		elif child.nodeName == 'area':
 			parseArea(child)
 		elif child.nodeName == 'artwork':
-			parseArtWork(child)
+			parseArtWork(child, figureFigure())
 		elif child.nodeName == 'author':
 			parseAuthor(child)
 		elif child.nodeName == 'blockquote':
