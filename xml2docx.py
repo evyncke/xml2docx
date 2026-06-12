@@ -879,13 +879,14 @@ def processXML(inFilename: str, outFilename: str = 'xml2docx.xml') -> None:
 		xmldoc = minidom.parse(inFilename)
 	else:
 		try:
-			response = urllib.request.urlopen('https://datatracker.ietf.org/doc/id/' + inFilename + '.xml')
+			url = 'https://datatracker.ietf.org/doc/id/' + inFilename + '.xml'
+			response = urllib.request.urlopen(url)
 		except:
-			print("Cannot fetch the XML document from the IETF site...")
+			print("Cannot fetch the XML document from the IETF site: " + url)
 			sys.exit(1)
 		draftString = response.read()
 		xmldoc = minidom.parseString(draftString)
-		print("Fetching the draft from the IETF site...")
+		print("Fetching the draft from the IETF site, " + url)
 		
 	rfc = xmldoc.getElementsByTagName('rfc')[0]
 
