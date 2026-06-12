@@ -69,7 +69,6 @@ class docxWriter(xmlWriter):
         self.docxDocument.setAttribute('xmlns:wne', 'http://schemas.microsoft.com/office/word/2006/wordml') 
         self.docxDocument.setAttribute('xmlns:wps', 'http://schemas.microsoft.com/office/word/2010/wordprocessingShape') 
         self.docxDocument.setAttribute('mc:Ignorable', 'w14 w15 w16se w16cid w16 w16cex wp14')	
-        self.docxDocument.setAttribute('xmlns:w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main')
         self.docxRoot.appendChild(self.docxDocument)
         
         self.docxBody = self.docxRoot.createElement('w:body')
@@ -161,7 +160,7 @@ class docxWriter(xmlWriter):
         if self.openXML is None:
             self.openXML = self.templateDirectory + '/word/document.xml'
 
-        docxFile = io.open(self.openXML, 'w', encoding="'utf8'")
+        docxFile = io.open(self.openXML, 'w', encoding='utf-8')
         # Ugly but no other way to put attributes in the top XML 
         docxFile.write(self.docxRoot.toprettyxml().replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'))
         docxFile.close()
@@ -210,11 +209,11 @@ class docxWriter(xmlWriter):
             pPr.appendChild(jc)
         if unnumbered:  # Try to override the default numbering in the style
             numPr = self.docxRoot.createElement('w:numPr')
-            ilvl = self.docxRoot.createElement('w:ilvl ')
-            ilvl.setAttribute('w:val', 0)
+            ilvl = self.docxRoot.createElement('w:ilvl')
+            ilvl.setAttribute('w:val', '0')
             numPr.appendChild(ilvl)
             numId = self.docxRoot.createElement('w:numId')
-            numId.setAttribute('w:val', 0)
+            numId.setAttribute('w:val', '0')
             numPr.appendChild(numId)
             pPr.appendChild(numPr)
         elif numberingID != None and indentationLevel != None:
@@ -223,7 +222,7 @@ class docxWriter(xmlWriter):
     #					<w:numId w:val="2"/>
     #				</w:numPr>
             numPr = self.docxRoot.createElement('w:numPr')
-            ilvl = self.docxRoot.createElement('w:ilvl ')
+            ilvl = self.docxRoot.createElement('w:ilvl')
             ilvl.setAttribute('w:val', indentationLevel)
             numPr.appendChild(ilvl)
             numId = self.docxRoot.createElement('w:numId')
@@ -256,7 +255,6 @@ class docxWriter(xmlWriter):
         else:
             t.setAttribute('xml:space', 'preserve')
             text = self.docxRoot.createTextNode(textValue)
-    #		text = docxRoot.createCDATASection(textValue)   # xml:space is enough to keep leading spaces, CDATA adds 4 tabs after in the pretty printing :-(
         t.appendChild(text)
         r.appendChild(t) 
         docxP.appendChild(r)

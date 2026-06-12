@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#   Copyright 2020-2025, Eric Vyncke, evyncke@cisco.com
+#   Copyright 2020-2026, Eric Vyncke, evyncke@cisco.com
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,17 +41,17 @@ import urllib.request
 # import mdWriter
 
 class xmlWriter:
-	# Same states to be kept
-	metaData = {}  # A dict for slugs: authors, date, keywords, title
-	abstract = []  # A list of paragraphs in the abstract
-	normativeReferences = []  # A list of normative references
-	informativeReferences = []  # A list of informative references
 	filename = None  # The filename of the to-be-created file
 	inMiddle = True  # True if we are in the middle part of the document, False if in the back part
 
 	def __init__(self, filename: Optional[str] = None) -> None:
 		self.filename = filename
 		self.inMiddle = True  # Start in the middle part
+		# Same states to be kept
+		self.metaData = {}  # A dict for slugs: authors, date, keywords, title
+		self.abstract = []  # A list of paragraphs in the abstract
+		self.normativeReferences = []  # A list of normative references
+		self.informativeReferences = []  # A list of informative references
 
 	def save(self) -> None:
 		pass
@@ -92,8 +92,8 @@ class xmlWriter:
 		pass
 			  
 class tableTable:
-	name: Optional[str] = None
-	rows: List['tableRow'] = []
+	name: Optional[str] 
+	rows: List['tableRow']
 
 	def __init__(self, name: Optional[str] = None) -> None:
 		self.name = name
@@ -124,7 +124,7 @@ class tableCell:
 
 class figureFigure:
 	name: Optional[str] = None
-	rows: List[str] = []
+	rows: List[str]
 
 	def __init__(self, name: Optional[str] = None) -> None:
 		self.name = name
@@ -173,6 +173,9 @@ def includeExternal(referenceName: str) -> Optional[xml.dom.minidom.Element]:
 	global libsTable
 	
 	referenceTokens = referenceName.split('.')
+	if len(referenceTokens) < 2:
+		print("Reference name " + referenceName + " is malformed...")
+		return None
 	if libsTable.get(referenceTokens[1]):
 		libURL = libsTable.get(referenceTokens[1])
 		print("Importing " + referenceName + " from " + libURL + referenceName + '.xml')
@@ -496,8 +499,9 @@ def parseReference(elem: xml.dom.minidom.Element,
 				seriesInfoText += serieInfo.getAttribute('name') + ', '
 		else:
 			print("!!!! parseReference, no name/value attribute in seriesInfo for " + text)
-	frontElem = elem.getElementsByTagName('front')[0]
-	if frontElem:
+	frontElems = elem.getElementsByTagName('front')
+	if frontElems.length > 0:
+		frontElem = frontElems[0]
 		for author in frontElem.getElementsByTagName('author'):
 			authorName = '?' # Could also simply be in the child elemn <organization>
 			if author.hasAttribute('surname'):
@@ -921,9 +925,9 @@ if __name__ == '__main__':
 	docxFilename = None
 	mdFilename = None
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],"d:hi:m:o:t:",["ifile=","ofile=","template=", "docx=", "marldown="])
+		opts, args = getopt.getopt(sys.argv[1:],"d:hi:m:o:t:",["ifile=","ofile=","template=", "docx=", "md="])
 	except getopt.GetoptError:
-		print('xml2docx.py -i <inputfile> -o <outputXMLfile>')
+		print('xml2docx.py -i <inputfile/draft-name> [-o <outputXMLfile>] [--docx <result.docx>] [--md <markdown.md')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':

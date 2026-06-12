@@ -20,11 +20,11 @@ import textwrap
 class mdWriter(xmlWriter):
   
     # This class is used to write the XML file in the Markdown format
-    mdMiddleText = [] # A list of all the paragraphs in the middle part
-    mdBackText = []  # A list of all the paragraphs in the back part
 
     def __init__(self, filename = None):
         super().__init__(filename)
+        self.mdMiddleText = [] # A list of all the paragraphs in the middle part
+        self.mdBackText = []  # A list of all the paragraphs in the back part
     
     def setMetaData(self, slug, value):
         super().setMetaData(slug, value)
