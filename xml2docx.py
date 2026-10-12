@@ -212,6 +212,13 @@ def parseArea(elem: xml.dom.minidom.Element) -> None:
 				print('!!!!! parseArea: Text is ELEMENT_NODE: ', text.nodeName)
 	writer.setMetaData('area', textValue)
 
+def firstChildText(elem: xml.dom.minidom.Element, default: Optional[str] = None) -> Optional[str]:
+	# Text of the first child node, or default when the element has no child (e.g., <td/>)
+	if elem.nodeType != Node.ELEMENT_NODE or not elem.childNodes:
+		return default
+	value = elem.childNodes[0].nodeValue
+	return default if value is None else value
+
 def parseArtWork(elem: xml.dom.minidom.Element, figure: figureFigure) -> None:	# See also https://tools.ietf.org/html/rfc7991#section-2.5
 	# If there is no type attribute, let's process the element
 	# If there is a type attribute, let's process the element only if type == ascii-art
@@ -340,9 +347,9 @@ def parseEref(elem: xml.dom.minidom.Element) -> Optional[str]:	# See also https:
 def parseFigure(elem: xml.dom.minidom.Element) -> None: # See https://tools.ietf.org/html/rfc7991#section-2.25
 	# Figure had preamble (deprecated but let's process it)
 	preambleChildren = elem.getElementsByTagName('preamble')
-	if preambleChildren.length > 0 and preambleChildren[0].childNodes.length > 0:
-		if preambleChildren[0].nodeType == Node.ELEMENT_NODE:
-			preamble = preambleChildren[0].childNodes[0].nodeValue
+	if preambleChildren.length > 0:
+		preamble = firstChildText(preambleChildren[0])
+		if preamble is not None:
 			writer.newParagraph(preamble)
 	figure = figureFigure()
 	# Let's process a single artwork
@@ -360,16 +367,15 @@ def parseFigure(elem: xml.dom.minidom.Element) -> None: # See https://tools.ietf
 	else:
 		nameChild = elem.getElementsByTagName('name')
 		if nameChild.length > 0:
-			if nameChild[0].nodeType == Node.ELEMENT_NODE:
-				figureTitle = nameChild[0].childNodes[0].nodeValue
+			figureTitle = firstChildText(nameChild[0])
 	if figureTitle != None:
 		figure.setName(figureTitle)
 	writer.newFigure(figure)  # Let the writer handle the figure
 	# Figure had postamble (deprecated but let's process it)
 	postambleChildren = elem.getElementsByTagName('postamble')
-	if postambleChildren.length > 0  and postambleChildren[0].childNodes.length > 0:
-		if postambleChildren[0].nodeType == Node.ELEMENT_NODE:
-			postamble = postambleChildren[0].childNodes[0].nodeValue
+	if postambleChildren.length > 0:
+		postamble = firstChildText(postambleChildren[0])
+		if postamble is not None:
 			writer.newParagraph(postamble)
 	
 def parseKeyword(elem: xml.dom.minidom.Element) -> None:
@@ -558,8 +564,7 @@ def parseReferences(elem, headingLevel = 1): # https://tools.ietf.org/html/rfc79
 	else:
 		nameChild = elem.getElementsByTagName('name')
 		if nameChild.length > 0:
-			if nameChild[0].nodeType == Node.ELEMENT_NODE:
-				sectionTitle = nameChild[0].childNodes[0].nodeValue
+			sectionTitle = firstChildText(nameChild[0])
 		else:
 			print('??? parseReferences: this references section has not title...')
 	isNormative = (sectionTitle is not None and sectionTitle.startswith('Normative Reference'))
@@ -622,8 +627,7 @@ def parseSection(elem: xml.dom.minidom.Element, headingDepth: int) -> None:
 		# Look after a child node of tag "name"
 		nameChild = elem.getElementsByTagName('name')
 		if nameChild.length > 0:
-			if nameChild[0].nodeType == Node.ELEMENT_NODE:
-				sectionTitle = nameChild[0].childNodes[0].nodeValue
+			sectionTitle = firstChildText(nameChild[0])
 		else:
 			print('??? This section has not title...') 
 	if sectionTitle != None:
@@ -787,12 +791,12 @@ def parseTable(elem: xml.dom.minidom.Element) -> None:  # See https://tools.ietf
 						if cell.nodeType != Node.ELEMENT_NODE:
 							continue
 						if cell.nodeName in ['td', 'th']:  # td is a table data cell, th is a table header cell
-							thisRow.addCell(tableCell(cell.childNodes[0].nodeValue))
+							thisRow.addCell(tableCell(firstChildText(cell, '')))
 						else:
 							print('!!!! parseTable unexpected header cell: ', cell.nodeName)
 				thisTable.addRow(thisRow)
 		elif child.nodeName == 'name':
-			thisTable.setName(child.childNodes[0].nodeValue)
+			thisTable.setName(firstChildText(child, ''))
 		else:
 			print('!!!! parseTable unexpected child: ', child.nodeName)
 	writer.newTable(thisTable)  # Let's write the table to the document
@@ -810,22 +814,22 @@ def parseTextTable(elem: xml.dom.minidom.Element) -> None:  # See https://tools.
 		if child.nodeType != Node.ELEMENT_NODE:
 			continue
 		elif child.nodeName == 'preamble':
-			preAmble = child.childNodes[0].nodeValue
+			preAmble = firstChildText(child)
 		elif child.nodeName == 'ttcol':  # Top Header
 			columnCount += 1
 			if thisRow is None:
 				thisRow = tableRow(rowType = 'thead')
-			thisRow.addCell(tableCell(child.childNodes[0].nodeValue))
+			thisRow.addCell(tableCell(firstChildText(child, '')))
 		elif child.nodeName == 'c': # Cell  
 			# Do we need to output the previous row ?
 			if cellIndex is None or cellIndex >= columnCount: 
 				thisTable.addRow(thisRow)
 				thisRow = tableRow(rowType= 'tbody')
 				cellIndex = 0
-			thisRow.addCell(tableCell(child.childNodes[0].nodeValue))
+			thisRow.addCell(tableCell(firstChildText(child, '')))
 			cellIndex += 1
 		elif child.nodeName == 'postamble':
-			postAmble = child.childNodes[0].nodeValue
+			postAmble = firstChildText(child)
 		else:
 			print('!!!! parseTextTable unexpected child: ', child.nodeName)
 	thisTable.addRow(thisRow) # optimistic...
